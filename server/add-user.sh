@@ -60,8 +60,8 @@ fi
 BK="$CFG.bak.$(date -u +%Y%m%d%H%M%S)"
 cat "$CFG" > "$BK"
 cat "$TMP" > "$CFG"; rm -f "$TMP"
-chown root:root "$CFG" 2>/dev/null || true
-chmod 644 "$CFG" 2>/dev/null || true
+chown root:xray "$CFG" 2>/dev/null || true
+chmod 640 "$CFG" 2>/dev/null || true
 restorecon "$CFG" 2>/dev/null || true
 
 systemctl reset-failed xray 2>/dev/null || true

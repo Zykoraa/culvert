@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record RouteHealth(HealthCheck Ipv4, HealthCheck Ipv6, HealthCheck OrdinaryInternet)
 {
@@ -36,10 +36,10 @@ internal static class RouteProbe
     {
         string family = ipv6 ? "IPv6" : "IPv4";
         if (routes.Any(i => i.HasValue && !tunnelIndexes.Contains(i.Value)))
-            return new(false, $"{family} has an ordinary internet route outside Conduit. Check other VPNs and reconnect.", BypassDetected: true);
+            return new(false, $"{family} has an ordinary internet route outside Culvert. Check other VPNs and reconnect.", BypassDetected: true);
         if (routes.All(i => i is null))
             return new(ipv6, ipv6 ? "No public IPv6 route is available." : "No public IPv4 route is available.");
-        return new(true, $"Sampled {family} internet routes use Conduit.");
+        return new(true, $"Sampled {family} internet routes use Culvert.");
     }
     public static (HealthCheck v4, HealthCheck v6) Read()
     {

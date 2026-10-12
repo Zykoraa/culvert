@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class UpdateFeedChecks
 {
@@ -37,7 +37,7 @@ internal static class UpdateFeedChecks
         byte[] publicKey = key.ExportSubjectPublicKeyInfo();
         string flavor = UpdateInstaller.Flavor; var now = DateTimeOffset.UtcNow;
         byte[] bundle = Encoding.UTF8.GetBytes(new string('x', 1024));
-        var release = new UpdateFeedManifest(1, "stable", flavor, "99.1.0", $"Conduit-{flavor}-99.1.0.wtupdate",
+        var release = new UpdateFeedManifest(1, "stable", flavor, "99.1.0", $"Culvert-{flavor}-99.1.0.wtupdate",
             Convert.ToHexString(SHA256.HashData(bundle)), bundle.Length, now, now.AddDays(30), Convert.ToHexString(SHA256.HashData(publicKey)).ToLowerInvariant());
         byte[] document = UpdateFeedCodec.Sign(release, key);
         check(UpdateFeedCodec.Verify(document, publicKey, flavor, now) == release, "Authentic update feed binds flavor, version, asset, size and hash");
@@ -65,10 +65,10 @@ internal static class UpdateFeedChecks
         reject(() => UpdateFeedCodec.Verify(signedDuplicate, publicKey, flavor, now), "Even authentic metadata rejects duplicate fields");
         foreach (string address in new[] { "http://updates.example/feed.json", "https://user:secret@updates.example/feed.json", "https://updates.example/feed.json?token=secret", "https://updates.example:8080/feed.json", "https://localhost/feed.json", "https://updates.example/feed.json#fragment" })
             reject(() => UpdateFeedCodec.FeedAddress(address), "Reject unsafe update feed address " + address.Split(':')[0]);
-        var uri = UpdateFeedCodec.FeedAddress("https://updates.example/conduit/owner.json");
+        var uri = UpdateFeedCodec.FeedAddress("https://updates.example/culvert/owner.json");
         var update = new VerifiedUpdate(release, uri);
         var options = new UpdateOptions(uri.AbsoluteUri);
-        string root = Path.Combine(Path.GetTempPath(), "Conduit-feed-check-" + Guid.NewGuid().ToString("N"));
+        string root = Path.Combine(Path.GetTempPath(), "Culvert-feed-check-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         async Task RejectAsync(Func<Task> action, string name)
         {
@@ -125,7 +125,7 @@ internal static class UpdateFeedChecks
             string preferences = Path.Combine(root, "preferences.json");
             var defaults = UpdatePreferences.Read(preferences);
             check(!defaults.Automatic && defaults.Feed == UpdatePreferences.OfficialFeed(UpdateInstaller.Flavor), "Official release feed is available without enabling network traffic");
-            check(UpdateFeedCodec.FeedAddress(UpdatePreferences.OfficialFeed("Client")).AbsolutePath.EndsWith("Conduit-Client-stable.json") &&
+            check(UpdateFeedCodec.FeedAddress(UpdatePreferences.OfficialFeed("Client")).AbsolutePath.EndsWith("Culvert-Client-stable.json") &&
                 UpdatePreferences.OfficialFeed("Client") != UpdatePreferences.OfficialFeed("Owner"), "Official release feeds are direct HTTPS and distinct per flavor");
             UpdatePreferences.Write(preferences, options with { Automatic = true, HighestSeen = release.Version, LastChecked = now });
             var saved = UpdatePreferences.Read(preferences);

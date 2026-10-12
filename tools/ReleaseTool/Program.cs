@@ -1,11 +1,20 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.IO.Compression;
-using WorkTunnel;
+using Culvert;
 
-string keyPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WorkTunnelSigning", "release-key.dpapi");
+string keyPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CulvertSigning", "release-key.dpapi");
 using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
-if (File.Exists(keyPath))
+if (args.Length == 2 && args[0] == "import")
+{
+    // The PEM is supplied outside the repository, including by a protected release job.
+    key.ImportFromPem(File.ReadAllText(args[1]));
+    if (key.KeySize != 256 || !key.ExportSubjectPublicKeyInfo().SequenceEqual(ReleaseTrust.PublicKey))
+        throw new CryptographicException("Imported key does not match this source tree's P-256 release trust.");
+    byte[] secret = key.ExportPkcs8PrivateKey();
+    try { SecretStore.Save(keyPath, secret); } finally { CryptographicOperations.ZeroMemory(secret); }
+}
+else if (File.Exists(keyPath))
 {
     byte[] secret = SecretStore.Unprotect(File.ReadAllBytes(keyPath));
     try { key.ImportPkcs8PrivateKey(secret, out _); } finally { CryptographicOperations.ZeroMemory(secret); }
@@ -17,9 +26,14 @@ else if (args.Length == 2 && args[0] == "init")
 }
 else throw new InvalidOperationException("Signing key unavailable. Restore the original protected key; do not silently create a new trust identity.");
 byte[] publicKey = key.ExportSubjectPublicKeyInfo();
-if (args.Length == 2 && args[0] == "init")
+if (args.Length == 2 && args[0] == "import")
 {
-    File.WriteAllText(args[1], "namespace WorkTunnel;\ninternal static class ReleaseTrust { public static byte[] PublicKey => System.Convert.FromBase64String(\"" + Convert.ToBase64String(publicKey) + "\"); }\n");
+    if (!publicKey.SequenceEqual(ReleaseTrust.PublicKey)) throw new CryptographicException("Imported key does not match this source tree's release trust.");
+    Console.WriteLine("Culvert signing key imported into the Windows-protected store.");
+}
+else if (args.Length == 2 && args[0] == "init")
+{
+    File.WriteAllText(args[1], "namespace Culvert;\ninternal static class ReleaseTrust { public static byte[] PublicKey => System.Convert.FromBase64String(\"" + Convert.ToBase64String(publicKey) + "\"); }\n");
     Console.WriteLine("Release trust initialized; private key remains Windows-protected outside the repository.");
 }
 else if (args.Length == 5 && args[0] == "sign")
@@ -62,4 +76,4 @@ else if (args.Length == 3 && args[0] == "feed")
     File.WriteAllBytes(args[2], document);
     Console.WriteLine("Signed update feed: " + Path.GetFileName(args[2]));
 }
-else throw new ArgumentException("Usage: init <ReleaseTrust.cs> | sign <package.zip> <version> <flavor> <output.wtupdate> | feed <versioned.wtupdate> <output.json>");
+else throw new ArgumentException("Usage: init <ReleaseTrust.cs> | import <private-key.pem> | sign <package.zip> <version> <flavor> <output.wtupdate> | feed <versioned.wtupdate> <output.json>");

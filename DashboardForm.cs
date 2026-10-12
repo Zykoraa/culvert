@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
-internal sealed partial class DashboardForm : ConduitWindow
+internal sealed partial class DashboardForm : CulvertWindow
 {
     private readonly ITunnelController _controller;
     private Button _connect = null!;
@@ -62,7 +62,7 @@ internal sealed partial class DashboardForm : ConduitWindow
         _controller = controller; _onlineUpdates = persistHistory;
         _history = new HistoryStore(persistHistory ? Path.Combine(AppPaths.DataDir, "history.jsonl") : null);
         StyleCaption(this);
-        Text = "Conduit · Connection dashboard";
+        Text = "Culvert · Connection dashboard";
         AutoScaleMode = AutoScaleMode.Dpi;
         ClientSize = new(1320, 900); MinimumSize = new(980, 680);
         StartPosition = FormStartPosition.CenterScreen;

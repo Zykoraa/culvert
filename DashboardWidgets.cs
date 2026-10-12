@@ -1,7 +1,7 @@
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class DashboardTheme
 {
@@ -19,20 +19,20 @@ internal static class DashboardTheme
         _ = DwmSetWindowAttribute(form.Handle, 36, ref text, sizeof(int));
         };
     }
-    public static readonly Color Background = Color.FromArgb(12, 15, 21);
-    public static readonly Color Surface = Color.FromArgb(23, 28, 37);
-    public static readonly Color Border = Color.FromArgb(48, 58, 73);
-    public static readonly Color Text = Color.FromArgb(235, 239, 246);
-    public static readonly Color Muted = Color.FromArgb(155, 167, 185);
-    public static readonly Color Blue = Color.FromArgb(144, 167, 255);
-    public static readonly Color Pink = Color.FromArgb(111, 220, 228); // Secondary data trace: cyan.
-    public static readonly Color AccentBlue = Color.FromArgb(144, 167, 255);
-    public static readonly Color AccentPink = Color.FromArgb(144, 167, 255);
-    public static readonly Color BlueTint = Color.FromArgb(20, 29, 46);
-    public static readonly Color PinkTint = Color.FromArgb(28, 26, 43);
-    public static readonly Color Healthy = Color.FromArgb(111, 220, 228);
-    public static readonly Color Amber = Color.FromArgb(216, 183, 135);
-    public static readonly Color Red = Color.FromArgb(222, 148, 164);
+    public static readonly Color Background = Color.FromArgb(8, 7, 9);
+    public static readonly Color Surface = Color.FromArgb(19, 14, 17);
+    public static readonly Color Border = Color.FromArgb(65, 30, 38);
+    public static readonly Color Text = Color.FromArgb(246, 235, 238);
+    public static readonly Color Muted = Color.FromArgb(184, 155, 163);
+    public static readonly Color Blue = Color.FromArgb(255, 65, 88);
+    public static readonly Color Pink = Color.FromArgb(255, 145, 156); // Secondary data trace: pale crimson.
+    public static readonly Color AccentBlue = Color.FromArgb(255, 65, 88);
+    public static readonly Color AccentPink = Color.FromArgb(255, 65, 88);
+    public static readonly Color BlueTint = Color.FromArgb(43, 15, 23);
+    public static readonly Color PinkTint = Color.FromArgb(31, 13, 19);
+    public static readonly Color Healthy = Color.FromArgb(191, 228, 203);
+    public static readonly Color Amber = Color.FromArgb(246, 191, 108);
+    public static readonly Color Red = Color.FromArgb(255, 99, 117);
 
     public static Label Label(string text, float size = 10, Color? color = null, bool bold = false) => new()
     {

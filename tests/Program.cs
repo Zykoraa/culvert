@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
-using WorkTunnel;
+using Culvert;
 
 if (args.Length == 3 && args[0] == "--live-update-feed") { await LiveReleaseChecks.Feed(args[1], args[2]); return; }
 if (args.Length == 3 && args[0] == "--live-update-feed-unbound") { await LiveReleaseChecks.Feed(args[1], args[2], includeBound: false); return; }
@@ -18,6 +18,14 @@ if (args.Contains("--job-parent"))
 int passed = 0;
 void Check(bool value, string name) { if (!value) throw new Exception("FAIL " + name); passed++; Console.WriteLine("PASS " + name); }
 void Reject(Action action, string name) { try { action(); } catch { Check(true, name); return; } throw new Exception("FAIL " + name); }
+
+#if OWNER_BUILD
+Check(OwnerSshPreferences.Valid(new("opc", 22)), "Culvert owner SSH accepts the Oracle login without a bundled key");
+Check(OwnerSshPreferences.Valid(new("ubuntu", 2222, Path.Combine(Path.GetTempPath(), "culvert.key"))), "Owner SSH supports a separate VM login, port and key");
+Check(!OwnerSshPreferences.Valid(new("-oProxyCommand=bad", 22)), "Owner SSH rejects option-like usernames");
+Check(!OwnerSshPreferences.Valid(new("opc", 0)) && !OwnerSshPreferences.Valid(new("opc", 65536)), "Owner SSH rejects invalid ports");
+Check(!OwnerSshPreferences.Valid(new("opc", 22, "relative.key")), "Owner SSH rejects relative key paths");
+#endif
 
 var meter = new TrafficMeter();
 var adapter = new AdapterSnapshot("one", 1000, 2000, "tun", "wifi", "192.0.2.1", 1400);
@@ -45,7 +53,7 @@ Check(generatedXray["outbounds"]![0]!["settings"]!["vnext"]![0]!["address"]!.Get
     "Imported endpoint is used by Xray");
 var generatedTun = System.Text.Json.Nodes.JsonNode.Parse(TunnelController.BuildTunConfig(profile, File.ReadAllText(Path.Combine(configDir, "singbox-tun.json"))))!;
 var rules = generatedTun["route"]!["rules"]!.AsArray();
-Check(rules.Any(r => r?["action"]?.GetValue<string>() == "reject" && r["ip_cidr"]?[0]?.GetValue<string>() == "172.19.0.0/30"),
+Check(rules.Any(r => r?["action"]?.GetValue<string>() == "reject" && r["ip_cidr"]?[0]?.GetValue<string>() == "172.20.0.0/30"),
     "Import preserves the TUN loop guard");
 Check(rules.Any(r => r?["outbound"]?.GetValue<string>() == "direct" && r["ip_cidr"]?[0]?.GetValue<string>() == profile.Server + "/32"),
     "Imported endpoint bypass route matches Xray");
@@ -101,7 +109,7 @@ if (args.Contains("--broker-smoke")) await NativeChecks.CheckBroker(Check);
 if (args.Length == 2 && args[0] == "--native") await NativeChecks.Run(Check, args[1]);
 if (args.Length == 2 && args[0] == "--validate-package")
 {
-    string root = Path.Combine(Path.GetTempPath(), "WorkTunnel-package-test-" + Guid.NewGuid().ToString("N"));
+    string root = Path.Combine(Path.GetTempPath(), "Culvert-package-test-" + Guid.NewGuid().ToString("N"));
     try
     {
         var plan = UpdateInstaller.Prepare(args[1], UpdateInstaller.Hash(args[1]), Path.Combine(root, "target"), false, root);
@@ -112,7 +120,7 @@ if (args.Length == 2 && args[0] == "--validate-package")
 }
 if (args.Length == 2 && args[0] == "--validate-signed")
 {
-    string root = Path.Combine(Path.GetTempPath(), "WorkTunnel-signed-package-test-" + Guid.NewGuid().ToString("N"));
+    string root = Path.Combine(Path.GetTempPath(), "Culvert-signed-package-test-" + Guid.NewGuid().ToString("N"));
     try
     {
         var plan = UpdateInstaller.PrepareSigned(args[1], Path.Combine(root, "target"), false, root);

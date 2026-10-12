@@ -1,13 +1,13 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace WorkTunnel;
+namespace Culvert;
 internal static class Preview
 {
     [DllImport("user32.dll")] private static extern IntPtr SendMessageW(IntPtr window, uint message, IntPtr wParam, IntPtr lParam);
     private static void CheckFrame(Form owner, List<string> issues)
     {
-        using var window = new ConduitWindow { Text = "Frame checks", Opacity = 0, ShowInTaskbar = false, Size = new(800, 600), StartPosition = FormStartPosition.Manual, Location = owner.Location };
+        using var window = new CulvertWindow { Text = "Frame checks", Opacity = 0, ShowInTaskbar = false, Size = new(800, 600), StartPosition = FormStartPosition.Manual, Location = owner.Location };
         window.Show(); window.PerformLayout();
         int Hit(Point point)
         {
@@ -64,7 +64,7 @@ internal static class Preview
         if (args.Contains("--tools"))
         {
             using var tools = new ToolsForm(controller, new HistoryStore(null), QualityResult.FromSamples([23, 24, 22, 25]), _ => { }, _ => throw new InvalidOperationException("Preview only"), onlineUpdates: false);
-            tools.Text = "Conduit - TOOLS PREVIEW (actions disabled)";
+            tools.Text = "Culvert - TOOLS PREVIEW (actions disabled)";
             void Disable(Control c) { if (c is Button && c.Parent?.Parent is not ToolPages) c.Enabled = false; foreach (Control child in c.Controls) Disable(child); }
             Disable(tools);
             if (args.Contains("--large-text")) UiPreferences.Apply(tools, 150);
@@ -120,9 +120,9 @@ internal static class Preview
         if (args.Contains("--compact"))
         {
             using var compact = new CompactForm(controller, () => "Preview: RX 1.6 MiB/s / TX 48 KiB/s", () => { }, persist: false);
-            compact.Text = "Conduit - COMPACT PREVIEW"; Application.Run(compact); return;
+            compact.Text = "Culvert - COMPACT PREVIEW"; Application.Run(compact); return;
         }
-        using var form = new DashboardForm(controller, persistHistory: false) { Text = "Conduit - DESIGN PREVIEW (controls disabled; current tunnel unchanged)" };
+        using var form = new DashboardForm(controller, persistHistory: false) { Text = "Culvert - DESIGN PREVIEW (controls disabled; current tunnel unchanged)" };
         int capture = Array.IndexOf(args, "--snapshot");
         if (capture >= 0) { form.Opacity = 0; form.ShowInTaskbar = false; }
         if (args.Contains("--small")) form.ClientSize = new(1060, 680);
@@ -146,7 +146,7 @@ internal static class Preview
                 var health = new TunnelHealth(new(true, "Full-device adapter is up"), new(true, "Exit matches your VM", 114),
                     new(healthy, healthy ? "DNS answered through the tunnel" : "DNS request timed out", healthy ? 24 : null),
                     new(healthy, healthy ? "STUN reply from expected exit" : "No UDP response", healthy ? 38 : null), "203.0.113.7", DateTimeOffset.Now,
-                    new(new(true, "Sampled IPv4 routes use Conduit"), new(true, "Sampled IPv6 routes use Conduit"), new(true, "Ordinary app exit matched")));
+                    new(new(true, "Sampled IPv4 routes use Culvert"), new(true, "Sampled IPv6 routes use Culvert"), new(true, "Ordinary app exit matched")));
                 typeof(TunnelController).GetProperty("Health")!.SetValue(controller, health);
                 typeof(TunnelController).GetProperty("Verified")!.SetValue(controller, healthy);
                 controller.KillSwitch = true;
@@ -164,7 +164,7 @@ internal static class Preview
                 if (args.Contains("--detail")) { form.Navigate("Connections"); Field<ListView>("_destinations").Items[0].Selected = true; }
                 Field<DashboardMetric>("_speed").UpdateValue("RX 1.6 MiB/s / TX 48 KiB/s", "Illustrative throughput samples");
                 Field<DashboardMetric>("_cores").UpdateValue("Xray / sing-box", "Preview - process IDs are not simulated");
-                Field<DashboardMetric>("_adapter").UpdateValue("worktunnel", "Configured MTU 1400 / gVisor");
+                Field<DashboardMetric>("_adapter").UpdateValue("culvert", "Configured MTU 1400 / gVisor");
                 var traffic = Field<DashboardChart>("_trafficChart"); var latency = Field<DashboardChart>("_latencyChart");
                 for (int i = 0; i < 300; i++) traffic.Add(i % 71 == 0 ? null : 1600000 + Math.Sin(i * .15) * 800000 + (i % 43 == 0 ? 6000000 : 0), 45000 + Math.Cos(i * .2) * 30000);
                 for (int i = 0; i < 120; i++) latency.Add(i % 33 == 0 ? null : 114 + Math.Sin(i * .2) * 40 + (i % 28 == 0 ? 230 : 0));

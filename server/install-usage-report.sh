@@ -21,7 +21,7 @@ RX="$(printf '%s' "$J" | jq -r '.interfaces[0].traffic.month[-1].rx // empty' 2>
 
 if [ -z "${TX:-}" ] || [ "$TX" = "null" ]; then
   curl -s -m 10 -H 'Content-Type: application/json' \
-    -d "$(jq -nc '{content:"WorkTunnel usage: vnstat is still collecting data - check again later."}')" \
+    -d "$(jq -nc '{content:"Culvert usage: vnstat is still collecting data - check again later."}')" \
     "$WEBHOOK" >/dev/null
   exit 0
 fi
@@ -38,7 +38,7 @@ PAYLOAD="$(jq -nc \
   --arg out "$OUT" \
   --arg inc "$RXG GB (does not count)" \
   --arg foot "shared VM egress · resets monthly · $(hostname)" \
-  '{embeds:[{title:"WorkTunnel — data usage this month",color:$color,
+  '{embeds:[{title:"Culvert — data usage this month",color:$color,
      fields:[{name:"Outbound (counts toward 10 TB)",value:$out},
              {name:"Incoming (free)",value:$inc,inline:true}],
      footer:{text:$foot}}]}')"
@@ -49,7 +49,7 @@ chmod 755 /usr/local/bin/usage-report.sh
 
 cat > /etc/systemd/system/usage-report.service <<'SVC'
 [Unit]
-Description=WorkTunnel daily data-usage report to Discord
+Description=Culvert daily data-usage report to Discord
 After=network-online.target
 [Service]
 Type=oneshot
@@ -58,7 +58,7 @@ SVC
 
 cat > /etc/systemd/system/usage-report.timer <<'TMR'
 [Unit]
-Description=Post WorkTunnel data-usage report daily
+Description=Post Culvert data-usage report daily
 [Timer]
 OnCalendar=*-*-* 13:00:00
 Persistent=true

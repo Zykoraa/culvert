@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class FeatureChecks
 {
@@ -22,7 +22,7 @@ internal static class FeatureChecks
         check(ProblemExplanation.Explain(TunnelState.Connected, h).Contains("unknown"), "Combined failures do not invent a root cause");
         check(ProblemExplanation.Explain(TunnelState.Connected, h with { Internet = ok, Dns = ok }).Contains("UDP is unverified"), "UDP failure is distinguished from general internet failure");
 
-        string root = Path.Combine(Path.GetTempPath(), "WorkTunnel-tests-" + Guid.NewGuid().ToString("N"));
+        string root = Path.Combine(Path.GetTempPath(), "Culvert-tests-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         try
         {
@@ -60,7 +60,7 @@ internal static class FeatureChecks
             {
                 if (File.Exists(zip)) File.Delete(zip);
                 using var z = ZipFile.Open(zip, ZipArchiveMode.Create);
-                foreach (string file in new[] { "WorkTunnel.exe", "cores/xray/xray.exe", "cores/sing_box/sing-box.exe", "configs/xray.template.json", "configs/singbox-tun.json", "configs/profile.json" })
+                foreach (string file in new[] { "Culvert.exe", "cores/xray/xray.exe", "cores/sing_box/sing-box.exe", "configs/xray.template.json", "configs/singbox-tun.json", "configs/profile.json" })
                 { using var w = new StreamWriter(z.CreateEntry(file).Open()); w.Write("test fixture"); }
                 using (var w = new StreamWriter(z.CreateEntry("release-manifest.json").Open())) w.Write(JsonSerializer.Serialize(new ReleaseManifest("99.0.0", flavor)));
                 if (traversal) { using var w = new StreamWriter(z.CreateEntry("../escaped").Open()); w.Write("bad"); }

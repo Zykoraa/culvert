@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record AdapterSnapshot(string? Id, long Received, long Sent, string Tunnel, string Network, string Address, int? Mtu);
 
@@ -26,7 +26,7 @@ internal static class DashboardTelemetry
             catch (Exception error) when (error is SocketException or FormatException or ArgumentException) { }
             var candidates = interfaces.Where(n => n.OperationalStatus == OperationalStatus.Up &&
                 n.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211 &&
-                !new[] { "worktunnel", "wintun", "vmware", "tailscale", "vethernet", "virtual" }.Any(word => (n.Name + n.Description).Contains(word, StringComparison.OrdinalIgnoreCase)) &&
+                !new[] { "culvert", "wintun", "vmware", "tailscale", "vethernet", "virtual" }.Any(word => (n.Name + n.Description).Contains(word, StringComparison.OrdinalIgnoreCase)) &&
                 n.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork)).ToArray();
             var uplink = candidates.FirstOrDefault(n => n.GetIPProperties().UnicastAddresses.Any(a => a.Address.Equals(source))) ?? candidates.FirstOrDefault();
             if (uplink != null)

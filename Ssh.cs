@@ -1,20 +1,23 @@
 #if OWNER_BUILD
 using System.Diagnostics;
-namespace WorkTunnel;
+namespace Culvert;
 internal static class Ssh
 {
-    private static string KeyPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh", "oracle.key");
-    public static bool KeyPresent => File.Exists(KeyPath);
+    public static bool KeyPresent => File.Exists(OwnerSshPreferences.ResolveKey(OwnerSshPreferences.Read()));
     public static async Task<(int code, string output)> RunAsync(string remoteCommand, int timeoutMs = 30000, string? input = null)
     {
-        if (!KeyPresent) return (-1, "Owner SSH key is not installed on this PC.");
+        var options = OwnerSshPreferences.Read();
+        string keyPath = OwnerSshPreferences.ResolveKey(options);
+        if (!File.Exists(keyPath)) return (-1, "Set your private key under Settings → VM access first.");
         var profile = Profile.Load();
         if (profile.Imported != null) return (-1, "Owner server administration is unavailable for an imported v2rayN server.");
         if (!profile.IsValid) return (-1, "Invalid connection profile.");
         var psi = new ProcessStartInfo("ssh.exe") { UseShellExecute = false, CreateNoWindow = true,
             RedirectStandardOutput = true, RedirectStandardError = true, RedirectStandardInput = true };
-        foreach (var arg in new[] { "-i", KeyPath, "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=accept-new",
-            "-o", "ConnectTimeout=8", "opc@" + profile.Server, remoteCommand }) psi.ArgumentList.Add(arg);
+        foreach (var arg in new[] { "-i", keyPath, "-p", options.Port.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=accept-new",
+            "-o", "UserKnownHostsFile=" + Path.Combine(AppPaths.DataDir, "ssh-known-hosts"),
+            "-o", "ConnectTimeout=8", options.User + "@" + profile.Server, remoteCommand }) psi.ArgumentList.Add(arg);
         try
         {
             using var process = Process.Start(psi)!;

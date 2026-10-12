@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record TunnelDevice(string Id, string Name, bool Managed)
 {
@@ -12,7 +12,7 @@ internal sealed record DeviceList(TunnelDevice[] Devices, string Sni, string Sho
 
 internal sealed class DeviceManager(ITunnelController controller)
 {
-    private const string Command = "sudo -n /usr/local/bin/worktunnel-devices";
+    private const string Command = "sudo -n /usr/local/bin/culvert-devices";
     private static string PendingPath => Path.Combine(AppPaths.DataDir, "pending-device-operation.json");
     private static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
     public bool Pending => File.Exists(PendingPath);

@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record UpdateFeedManifest(int Schema, string Channel, string Flavor, string Version,
     string Asset, string BundleSha256, long BundleBytes, DateTimeOffset PublishedAt, DateTimeOffset ExpiresAt, string KeyId);
@@ -66,7 +66,7 @@ internal static class UpdateFeedCodec
         _ = VersionNumber(release.Version);
         if (release.Schema != 1 || release.Channel != "stable" || release.Flavor != flavor || flavor is not ("Owner" or "Client") ||
             release.KeyId != Convert.ToHexString(SHA256.HashData(publicKey)).ToLowerInvariant() ||
-            release.Asset != $"Conduit-{flavor}-{release.Version}.wtupdate" || release.BundleSha256 == null ||
+            release.Asset != $"Culvert-{flavor}-{release.Version}.wtupdate" || release.BundleSha256 == null ||
             !Regex.IsMatch(release.BundleSha256, "^[a-fA-F0-9]{64}$") || release.BundleBytes is < 1 or > MaximumBundleBytes ||
             release.PublishedAt > now.AddMinutes(5) || release.ExpiresAt <= now ||
             release.ExpiresAt <= release.PublishedAt || release.ExpiresAt - release.PublishedAt > TimeSpan.FromDays(90))

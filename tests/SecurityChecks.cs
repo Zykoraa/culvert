@@ -3,7 +3,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class SecurityChecks
 {
@@ -26,7 +26,7 @@ internal static class SecurityChecks
         var tampered = (byte[])metadata.Clone(); tampered[4] ^= 1;
         reject(() => ReleaseSignature.Verify(tampered, signature, pub), "Changing signed metadata invalidates the signature");
         reject(() => ReleaseSignature.Verify(metadata, signature[..63], pub), "Truncated release signature is rejected");
-        string root = Path.Combine(Path.GetTempPath(), "WorkTunnel-signature-check-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        string root = Path.Combine(Path.GetTempPath(), "Culvert-signature-check-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
         try
         {
             string bundle = Path.Combine(root, "bad.wtupdate");

@@ -1,4 +1,4 @@
-namespace WorkTunnel;
+namespace Culvert;
 
 internal enum RecoveryCause { ProxyExited, TunnelExited, HealthFailed, NetworkChanged, Manual }
 internal enum RecoveryAction { Proxy, Tunnel, Both }

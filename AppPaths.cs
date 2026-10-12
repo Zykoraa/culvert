@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>
 /// Resolves every path the app uses. Bundled assets (cores, configs, tools) sit
@@ -24,7 +24,7 @@ internal static class AppPaths
     public static string ProtectedProfilePath => Path.Combine(DataDir, "secrets", "profile.dpapi");
     public static string UserSid => System.Security.Principal.WindowsIdentity.GetCurrent().User!.Value;
     internal static string RuntimeSid { get; set; } = UserSid;
-    public static string RuntimeDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "WorkTunnel", "runtime", RuntimeSid);
+    public static string RuntimeDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Culvert", "runtime", RuntimeSid);
     public static string DiagScript => Path.Combine(BaseDir, "tools", "tether-diag.ps1");
 
     // --- per-user runtime state ---
@@ -34,7 +34,7 @@ internal static class AppPaths
         {
             var d = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "WorkTunnel");
+                "Culvert");
             Directory.CreateDirectory(d);
             return d;
         }

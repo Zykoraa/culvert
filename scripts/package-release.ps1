@@ -11,10 +11,10 @@ New-Item -ItemType Directory -Force -Path $dist | Out-Null
 $id = [guid]::NewGuid().ToString('N')
 $stage = Join-Path $dist ('stage-' + $id)
 $setupStage = Join-Path $dist ('setup-' + $id)
-$zip = Join-Path $dist "Conduit-$Flavor.zip"
-$bundle = Join-Path $dist "Conduit-$Flavor.wtupdate"
+$zip = Join-Path $dist "Culvert-$Flavor.zip"
+$bundle = Join-Path $dist "Culvert-$Flavor.wtupdate"
 $owner = if ($Flavor -eq 'Owner') { 'true' } else { 'false' }
-$project = Join-Path $root 'WorkTunnel.csproj'
+$project = Join-Path $root 'Culvert.csproj'
 $version = ([xml](Get-Content -LiteralPath $project -Raw)).Project.PropertyGroup.Version | Where-Object { $_ }
 try {
     function Test-PublishedExecutable([string]$exe, [string]$label) {
@@ -26,10 +26,10 @@ try {
         if ($process.ExitCode -ne 0 -or !(Test-Path -LiteralPath $report)) { throw "$label release check failed; see $report" }
         Get-Content -LiteralPath $report | Select-Object -Last 1 | Write-Host
     }
-    dotnet publish $project -c Release "-p:OwnerBuild=$owner" -p:ConduitObfuscate=true -o $stage -v q
+    dotnet publish $project -c Release "-p:OwnerBuild=$owner" -p:CulvertObfuscate=true -o $stage -v q
     if ($LASTEXITCODE -ne 0) { throw 'App publish failed' }
-    Test-PublishedExecutable (Join-Path $stage 'WorkTunnel.exe') 'app'
-    & (Join-Path $PSScriptRoot 'check-release-resources.ps1') -Executable (Join-Path $stage 'WorkTunnel.exe') -Report (Join-Path $root "artifacts\private\resources\$version\$Flavor.json")
+    Test-PublishedExecutable (Join-Path $stage 'Culvert.exe') 'app'
+    & (Join-Path $PSScriptRoot 'check-release-resources.ps1') -Executable (Join-Path $stage 'Culvert.exe') -Report (Join-Path $root "artifacts\private\resources\$version\$Flavor.json")
     [IO.File]::WriteAllText((Join-Path $stage 'release-manifest.json'), (@{Version="$version";Flavor=$Flavor}|ConvertTo-Json))
     Copy-Item -LiteralPath (Join-Path $root 'SETUP.md'),(Join-Path $root 'engines.lock.json') -Destination $stage
     if (Test-Path -LiteralPath (Join-Path $stage 'configs/profile.json')) { throw 'An enrolled profile must never ship' }
@@ -46,14 +46,14 @@ try {
     Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Force
     dotnet run --project (Join-Path $root 'tools/ReleaseTool/ReleaseTool.csproj') -c Release -- sign $zip "$version" $Flavor $bundle
     if ($LASTEXITCODE -ne 0) { throw 'Release signing failed' }
-    dotnet publish (Join-Path $root 'installer/WorkTunnel.Setup.csproj') -c Release "-p:OwnerBuild=$owner" -p:ConduitObfuscate=true "-p:PayloadFile=$bundle" -o $setupStage -v q
+    dotnet publish (Join-Path $root 'installer/Culvert.Setup.csproj') -c Release "-p:OwnerBuild=$owner" -p:CulvertObfuscate=true "-p:PayloadFile=$bundle" -o $setupStage -v q
     if ($LASTEXITCODE -ne 0) { throw 'Setup publish failed' }
-    Test-PublishedExecutable (Join-Path $setupStage 'WorkTunnel.Setup.exe') 'setup'
-    $setup = Join-Path $dist "Conduit-$Flavor-Setup.exe"
-    Copy-Item -LiteralPath (Join-Path $setupStage 'WorkTunnel.Setup.exe') -Destination $setup -Force
-    $versionedBundle = Join-Path $dist "Conduit-$Flavor-$version.wtupdate"
+    Test-PublishedExecutable (Join-Path $setupStage 'Culvert.Setup.exe') 'setup'
+    $setup = Join-Path $dist "Culvert-$Flavor-Setup.exe"
+    Copy-Item -LiteralPath (Join-Path $setupStage 'Culvert.Setup.exe') -Destination $setup -Force
+    $versionedBundle = Join-Path $dist "Culvert-$Flavor-$version.wtupdate"
     Copy-Item -LiteralPath $bundle -Destination $versionedBundle -Force
-    $feed = Join-Path $dist "Conduit-$Flavor-stable.json"
+    $feed = Join-Path $dist "Culvert-$Flavor-stable.json"
     dotnet run --project (Join-Path $root 'tools/ReleaseTool/ReleaseTool.csproj') -c Release -- feed $versionedBundle $feed
     if ($LASTEXITCODE -ne 0) { throw 'Signed update-feed creation failed' }
     foreach ($file in @($setup,$bundle)) { Write-Host ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash + '  ' + [IO.Path]::GetFileName($file)) }

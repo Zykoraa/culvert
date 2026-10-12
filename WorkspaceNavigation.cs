@@ -1,10 +1,10 @@
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class WorkspaceNavigation : Control, IAnimatedControl
 {
-    private readonly ConduitWordmark _brand = new();
+    private readonly CulvertWordmark _brand = new();
     private readonly DashboardButton _collapse = new() { Text = "☰", AccessibleName = "Collapse navigation", TabIndex = 0 };
     private readonly List<(string Name, string Icon, DashboardButton Button)> _items = new();
     private readonly ToolTip _tips = new();

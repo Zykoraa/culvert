@@ -17,9 +17,9 @@ import time
 import uuid
 
 CONFIG = Path('/usr/local/etc/xray/config.json')
-JOBS = Path('/var/lib/worktunnel/devices')
+JOBS = Path('/var/lib/culvert/devices')
 XRAY = '/usr/local/bin/xray'
-PREFIX = 'wt-device:'
+PREFIX = 'cv-device:'
 
 
 def guid(value):

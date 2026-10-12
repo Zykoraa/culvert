@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class ToolsForm : Form
 {
@@ -19,7 +19,7 @@ internal sealed class ToolsForm : Form
     public ToolsForm(ITunnelController controller, HistoryStore history, QualityResult? quality, Action<QualityResult> qualityChanged, Func<UpdatePlan, Task> install, string? embeddedGroup = null, bool onlineUpdates = true)
     {
         _controller = controller; _history = history; _quality = quality; _qualityChanged = qualityChanged; _install = install;
-        Text = "Connection tools · Conduit"; Size = new(860, 640); MinimumSize = new(750, 530); StartPosition = FormStartPosition.CenterParent;
+        Text = "Connection tools · Culvert"; Size = new(860, 640); MinimumSize = new(750, 530); StartPosition = FormStartPosition.CenterParent;
         BackColor = Background; ForeColor = DashboardTheme.Text; Font = new("Segoe UI", 10);
         if (embeddedGroup == null) StyleCaption(this); else { TopLevel = false; FormBorderStyle = FormBorderStyle.None; MinimumSize = Size.Empty; }
         var tabs = _tabs = new ToolPages { Dock = DockStyle.Fill }; Controls.Add(tabs);
@@ -64,10 +64,13 @@ internal sealed class ToolsForm : Form
             if (!IsDisposed) values.AppendText("\r\n\r\n" + string.Join("\r\n", versions) + "\r\n\r\nThese settings are read-only to preserve the tested routing. Import link changes the device profile.");
         }
         var settingsButtons = Buttons(); settings.Controls.Add(settingsButtons); settingsButtons.Controls.Add(Button("Refresh settings", ReadSettings));
+#if OWNER_BUILD
+        settingsButtons.Controls.Add(Button("VM access", () => { using var vm = new OwnerSshForm(); vm.ShowDialog(this); return Task.CompletedTask; }));
+#endif
         settingsButtons.Controls.Add(Button("Export this device's link", () =>
         {
             var profile = Profile.Load(); if (!profile.IsValid) throw new InvalidOperationException("Import a device connection first.");
-            using var save = new SaveFileDialog { Filter = "Connection link (contains credentials)|*.txt", FileName = "Conduit-device-link.txt" };
+            using var save = new SaveFileDialog { Filter = "Connection link (contains credentials)|*.txt", FileName = "Culvert-device-link.txt" };
             if (save.ShowDialog(this) == DialogResult.OK) File.WriteAllText(save.FileName, DeviceLink.Create(profile), AppPaths.Utf8NoBom);
             return Task.CompletedTask;
         }));
@@ -128,7 +131,7 @@ internal sealed class ToolsForm : Form
                 await UpdateInstaller.ValidateCoresAsync(plan);
                 ct.ThrowIfCancellationRequested();
                 if (IsDisposed) return;
-                if (MessageBox.Show(this, $"Install version {plan.Version}? Conduit will briefly disconnect, restart, and reconnect if it was connected. Your device profile will be kept.", "Install verified package", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                if (MessageBox.Show(this, $"Install version {plan.Version}? Culvert will briefly disconnect, restart, and reconnect if it was connected. Your device profile will be kept.", "Install verified package", MessageBoxButtons.OKCancel) == DialogResult.OK)
                     await _install(plan);
                 else updateText.Text = "Update verified but not installed. Your running app is unchanged.";
             }
@@ -136,11 +139,11 @@ internal sealed class ToolsForm : Form
         }
         _feed = new UpdateFeedPanel(controller, ReviewBundle, onlineUpdates && embeddedGroup != "diagnostics"); updates.Controls.Add(_feed);
         var updateButtons = Buttons(); updates.Controls.Add(updateButtons);
-        updateButtons.Controls.Add(Button("Open releases", () => { Process.Start(new ProcessStartInfo("https://github.com/Zykoraa/conduit/releases/latest") { UseShellExecute = true }); return Task.CompletedTask; }));
+        updateButtons.Controls.Add(Button("Open releases", () => { Process.Start(new ProcessStartInfo("https://github.com/Zykoraa/culvert/releases/latest") { UseShellExecute = true }); return Task.CompletedTask; }));
         updateButtons.Controls.Add(Button("Install signed update", async () =>
         {
             if (_installing || _feed.Busy) return;
-            using var choose = new OpenFileDialog { Filter = "Signed Conduit bundle|*.wtupdate" }; if (choose.ShowDialog(this) != DialogResult.OK) return;
+            using var choose = new OpenFileDialog { Filter = "Signed Culvert bundle|*.wtupdate" }; if (choose.ShowDialog(this) != DialogResult.OK) return;
             await ReviewBundle(choose.FileName, CancellationToken.None);
         }));
         updateButtons.Controls.Add(Button("Roll back", async () =>
@@ -168,7 +171,7 @@ internal sealed class ToolsForm : Form
     }
     private async Task ExportAsync()
     {
-        using var save = new SaveFileDialog { Filter = "Diagnostic ZIP|*.zip", FileName = "Conduit-diagnostics-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".zip" };
+        using var save = new SaveFileDialog { Filter = "Diagnostic ZIP|*.zip", FileName = "Culvert-diagnostics-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".zip" };
         if (save.ShowDialog(this) != DialogResult.OK) return;
         var state = _controller.State; var health = _controller.Health; var entries = _history.Entries; var quality = _quality;
         await Task.Run(() => DiagnosticsExporter.Export(save.FileName, state, health, entries, quality));
@@ -180,7 +183,7 @@ internal sealed class ToolsForm : Form
     private Button Button(string text, Func<Task> action)
     {
         var button = new DashboardButton { Text = text, AutoSize = true, Height = 35, BackColor = BlueTint, ForeColor = DashboardTheme.Text, Padding = new(8, 4, 8, 4), Cursor = Cursors.Hand };
-        button.Click += async (_, _) => { button.Enabled = false; try { await action(); } catch (Exception e) { if (!IsDisposed) MessageBox.Show(this, e.Message, "Conduit"); } finally { if (!IsDisposed) button.Enabled = true; } }; return button;
+        button.Click += async (_, _) => { button.Enabled = false; try { await action(); } catch (Exception e) { if (!IsDisposed) MessageBox.Show(this, e.Message, "Culvert"); } finally { if (!IsDisposed) button.Enabled = true; } }; return button;
     }
     protected override void Dispose(bool disposing) { if (disposing) { CancelProbe(); _controller.StatusChanged -= OnState; } base.Dispose(disposing); }
 }

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class EngineConfiguration
 {

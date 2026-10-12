@@ -1,10 +1,12 @@
-# Conduit
+# Culvert
 
 **Connected on your terms.**
 
-A Windows x64 client for personal VLESS/REALITY tunnels and supported servers imported from v2rayN. Conduit pairs Xray with sing-box, shows current connection evidence, and offers an optional whole-PC network lock.
+Culvert is an independent copy of [Conduit](https://github.com/Zykoraa/conduit), with a black/crimson theme and its own VM, settings, installer and update trust. Both can remain installed; run one full-device tunnel at a time.
 
-[Download Conduit](https://zykoraa.github.io/conduit/) · [Releases](https://github.com/Zykoraa/conduit/releases) · [Setup and recovery](SETUP.md) · [Architecture](ARCHITECTURE.md)
+A Windows x64 client for personal VLESS/REALITY tunnels and supported servers imported from v2rayN. Culvert pairs Xray with sing-box, shows current connection evidence, and offers an optional whole-PC network lock.
+
+[Download Culvert](https://zykoraa.github.io/culvert/) · [Releases](https://github.com/Zykoraa/culvert/releases) · [Setup and recovery](SETUP.md) · [Architecture](ARCHITECTURE.md)
 
 ## Features
 
@@ -12,7 +14,7 @@ A Windows x64 client for personal VLESS/REALITY tunnels and supported servers im
 - Fresh exit, DNS, UDP and sampled IPv4/IPv6 route checks. Failed or stale evidence cannot retain a verified indication.
 - Optional persistent Windows Filtering Platform network lock, with explicit Disconnect and Restore normal internet controls.
 - Targeted engine recovery, bounded restart attempts and patient recovery after network changes.
-- Import of supported VLESS, VMess, Trojan and Shadowsocks servers over TCP, WebSocket or gRPC. Conduit supplies its own routing and engines; custom v2rayN routing is not imported.
+- Import of supported VLESS, VMess, Trojan and Shadowsocks servers over TCP, WebSocket or gRPC. Culvert supplies its own routing and engines; custom v2rayN routing is not imported.
 - Windows-user-encrypted profiles and authenticated, bounded local connection statistics.
 - Local live destination activity and redacted diagnostics. Destination records are not sent to a geolocation provider.
 - Balanced and Low power display modes, reduced-motion support, scalable text and suspended display sampling while minimized.
@@ -25,7 +27,7 @@ Download Client for ordinary use or Owner for server administration. Both includ
 
 Network lock is off by default and affects the whole PC. Read [its exceptions and recovery controls](SETUP.md) before enabling it. Connection checks sample specific paths; a verified indication is not a guarantee covering every app or route.
 
-Setup currently has no Windows Authenticode publisher certificate. Compare its SHA-256 with the release checksums. Installed Conduit independently verifies signed feeds and update bundles.
+Setup currently has no Windows Authenticode publisher certificate. Compare its SHA-256 with the release checksums. Installed Culvert independently verifies signed feeds and update bundles.
 
 ## Build and test
 
@@ -33,23 +35,23 @@ Use .NET 10 on Windows:
 
 ```powershell
 dotnet restore --locked-mode
-dotnet run --project tests/WorkTunnel.Checks.csproj -c Release
+dotnet run --project tests/Culvert.Checks.csproj -c Release
 ./scripts/check-engines.ps1
 dotnet build -c Release
 ```
 
 The Windows release workflow also tests actual IPv4/IPv6 packet filtering on a disposable runner, host lifetime, installation, damaged-file repair, reattachment and uninstall. Run native filtering tests only on a disposable machine. Windows Server fixtures do not establish Windows 11 roaming, sleep, battery or day-long reliability.
 
-Official packaging uses a production signing key stored outside this repository. Contributors can build ordinary source without that key. For a separately trusted fork, initialize your own key/public trust with tools/ReleaseTool; it cannot sign an official Conduit update. See [the release process](ARCHITECTURE.md).
+Official packaging uses a production signing key stored outside this repository. Contributors can build ordinary source without that key. For a separately trusted fork, initialize your own key/public trust with tools/ReleaseTool; fork keys cannot sign an official Culvert update. See [the release process](ARCHITECTURE.md).
 
 Packaging obfuscates the app and installer, verifies the resulting executables and checks an offline startup/UI memory budget. Private reverse maps, diagnostics and build intermediates stay in ignored directories.
 
 ## Privacy of this repository
 
-This repository starts with a sanitized source snapshot and fresh Git history. It contains no enrolled device profile, personal server default, SSH private key, production signing private key or local diagnostic archive. Templates use placeholders and documentation addresses. The release verification public key is intentionally public.
+This repository preserves Conduit’s public source history and adds the independent Culvert application. It contains no enrolled device profile, personal server default, SSH private key, production signing private key or local diagnostic archive. Templates use placeholders and documentation addresses. The release verification public key is intentionally public.
 
 scripts/check-public-source.ps1 checks tracked paths and template/default invariants. scripts/check-secrets.ps1 runs a pinned secret scanner against Git history. The release workflow runs both before building. These checks reduce accidental disclosure; review new files and reports before publishing.
 
 Do not commit personal links, generated runtime configurations, credentials or diagnostic reports, or paste them into public issues. Complete legacy profiles remain importable; older profiles missing their REALITY public key or short ID require a full connection link.
 
-Upstream engines are unmodified and pinned in engines.lock.json. Third-party notices remain with their dependencies. Internal WorkTunnel executable/data/IPC identifiers preserve compatibility with existing Conduit installations.
+Upstream engines are unmodified and pinned in engines.lock.json. Third-party notices remain with their dependencies. Culvert uses separate executable, data, IPC, adapter, proxy-port and firewall identifiers from Conduit.

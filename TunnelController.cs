@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal enum TunnelState { Disconnected, Connecting, Connected, Faulted }
 
@@ -36,7 +36,7 @@ internal sealed class StatusEventArgs(TunnelState state, string message, string?
 /// </summary>
 internal sealed class TunnelController : ITunnelController
 {
-    private const int SocksPort = 10808;
+    private const int SocksPort = 11808;
     private const int MaxHealAttempts = RecoveryPolicy.AttemptsPerCycle;
     private const int VerifyFailThreshold = 3; // ~3 x 15s of a bad/unverified exit before self-heal
 
@@ -173,15 +173,15 @@ internal sealed class TunnelController : ITunnelController
 
             if (_platform == null) KillStrayCores();
 
-            // Preflight: after clearing our own strays, if 10808 is still taken it's a
+            // Preflight: after clearing our own strays, if 11808 is still taken it's a
             // FOREIGN client (v2rayN). Refuse clearly instead of letting xray fail to bind
             // and then blackholing traffic — the confusing "internet cut out" case.
             if (_platform == null && !PortFree(SocksPort))
             {
                 bool v2 = IsRunning("v2rayN");
                 SetState(TunnelState.Faulted, v2
-                    ? "v2rayN is running and using port 10808. Exit v2rayN (tray V → Exit), then Connect."
-                    : "Port 10808 is in use by another tunnel client. Close it, then Connect.");
+                    ? "v2rayN is running and using port 11808. Exit v2rayN (tray V → Exit), then Connect."
+                    : "Port 11808 is in use by another tunnel client. Close it, then Connect.");
                 return;
             }
 
@@ -247,7 +247,7 @@ internal sealed class TunnelController : ITunnelController
             if (!_stopping) SetState(started ? TunnelState.Connected : TunnelState.Faulted, started ? "Connected — verifying exit…" : "Engine startup failed.");
             return started && !_stopping;
         }
-        // 1) xray first (opens SOCKS 10808)
+        // 1) xray first (opens SOCKS 11808)
         _xray = StartCore(AppPaths.XrayExe, $"run -c \"{AppPaths.XrayRunConfig}\"",
                           AppPaths.XrayLog, ref _xrayLog, OnXrayExited);
         if (_xray is null)

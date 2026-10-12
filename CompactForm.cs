@@ -1,13 +1,13 @@
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class CompactForm : Form
 {
     private readonly System.Windows.Forms.Timer _timer = new() { Interval = 1000 };
     public CompactForm(ITunnelController controller, Func<string> traffic, Action showDashboard, bool persist = true)
     {
-        Text = "Conduit · Compact"; ClientSize = new(385, 195); FormBorderStyle = FormBorderStyle.FixedToolWindow;
+        Text = "Culvert · Compact"; ClientSize = new(385, 195); FormBorderStyle = FormBorderStyle.FixedToolWindow;
         TopMost = true; BackColor = Background; ForeColor = DashboardTheme.Text; Font = new("Segoe UI", 10); StyleCaption(this);
         var grid = Grid(100); grid.Padding = new(15); grid.RowCount = 5;
         foreach (int height in new[] { 35, 28, 28, 34, 32 }) grid.RowStyles.Add(new(SizeType.Absolute, height));

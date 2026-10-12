@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record ReleaseManifest(string Version, string Flavor);
 internal sealed record UpdatePlan(string Source, string Target, string Version, string[] Files, Dictionary<string, string> Hashes, int ParentId, long ParentStarted, bool Reconnect, bool Rollback = false, string[]? Remove = null, string? SignedBundle = null);
@@ -18,7 +18,7 @@ internal static class UpdateInstaller
     public const string Flavor = "Client";
 #endif
     public static string Root => Path.Combine(AppPaths.DataDir, "updates");
-    public static string ProtectedRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "WorkTunnel", "updates-" + Flavor);
+    public static string ProtectedRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Culvert", "updates-" + Flavor);
     public static UpdatePlan PrepareSigned(string bundle, string target, bool reconnect, string? storageRoot = null)
     {
         string storage = storageRoot ?? Root;
@@ -73,7 +73,7 @@ internal static class UpdateInstaller
         if (manifest.Flavor != Flavor) throw new InvalidDataException($"This is the {Flavor} app. Choose its matching package.");
         if (!Version.TryParse(manifest.Version, out var next) || next <= typeof(UpdateInstaller).Assembly.GetName().Version)
             throw new InvalidDataException("Choose a newer release. Use Roll back for a previous installed version.");
-        foreach (string required in new[] { "WorkTunnel.exe", "cores/xray/xray.exe", "cores/sing_box/sing-box.exe", "configs/xray.template.json", "configs/singbox-tun.json" })
+        foreach (string required in new[] { "Culvert.exe", "cores/xray/xray.exe", "cores/sing_box/sing-box.exe", "configs/xray.template.json", "configs/singbox-tun.json" })
             if (!files.Contains(required)) throw new InvalidDataException("Incomplete app-and-engine package.");
         // Never replace the local identity, even with an Owner package's profile.
         files.RemoveWhere(f => f.Equals("configs/profile.json", StringComparison.OrdinalIgnoreCase));
@@ -90,7 +90,7 @@ internal static class UpdateInstaller
     }
     public static async Task ValidateCoresAsync(UpdatePlan plan, Profile? profile = null)
     {
-        if (!Version.TryParse(FileVersionInfo.GetVersionInfo(Under(plan.Source, "WorkTunnel.exe")).FileVersion, out _))
+        if (!Version.TryParse(FileVersionInfo.GetVersionInfo(Under(plan.Source, "Culvert.exe")).FileVersion, out _))
             throw new InvalidDataException("The app executable is damaged or missing version metadata.");
         var p = profile ?? (InstallSecurity.IsAdministrator ? new Profile() : Profile.Load());
         if (!p.IsValid) p = new Profile { User = "Validation", Uuid = "11111111-1111-4111-8111-111111111111", Server = "203.0.113.1", Sni = "example.com",
@@ -121,10 +121,10 @@ internal static class UpdateInstaller
     {
         Directory.CreateDirectory(Root);
         string id = Guid.NewGuid().ToString("N"), job = Path.Combine(Root, "job-" + id + ".json");
-        string eventName = "Local\\WorkTunnel_Update_" + id;
+        string eventName = "Local\\Culvert_Update_" + id;
         using var ready = new EventWaitHandle(false, EventResetMode.AutoReset, eventName);
         File.WriteAllText(job, JsonSerializer.Serialize(plan), AppPaths.Utf8NoBom);
-        var start = new ProcessStartInfo(Path.Combine(AppPaths.BaseDir, "WorkTunnel.exe")) { UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
+        var start = new ProcessStartInfo(Path.Combine(AppPaths.BaseDir, "Culvert.exe")) { UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
         start.ArgumentList.Add("--prepare-update"); start.ArgumentList.Add(job); start.ArgumentList.Add(eventName); Process.Start(start)?.Dispose();
         if (!await Task.Run(() => ready.WaitOne(60000))) throw new IOException("The installer did not become ready. The running app has not been stopped.");
     }
@@ -136,14 +136,14 @@ internal static class UpdateInstaller
             if (!InstallSecurity.IsAdministrator) throw new UnauthorizedAccessException("The installer requires elevation.");
             var requested = JsonSerializer.Deserialize<UpdatePlan>(File.ReadAllText(job)) ?? throw new InvalidDataException("Missing request.");
             using var parent = Process.GetProcessById(requested.ParentId);
-            if (parent.StartTime.ToUniversalTime().Ticks != requested.ParentStarted || !InstallSecurity.ProcessPath((uint)parent.Id).Equals(Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe"), StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Invalid parent process.");
+            if (parent.StartTime.ToUniversalTime().Ticks != requested.ParentStarted || !InstallSecurity.ProcessPath((uint)parent.Id).Equals(Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe"), StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Invalid parent process.");
             SecretStore.RestrictDirectory(ProtectedRoot, System.Security.Principal.WindowsIdentity.GetCurrent().User!);
             UpdatePlan plan = requested.Rollback ? PrepareRollback(InstallSecurity.InstallRoot, requested.Reconnect)
                 : PrepareSigned(requested.SignedBundle ?? throw new InvalidDataException("A signed bundle is required."), InstallSecurity.InstallRoot, requested.Reconnect, ProtectedRoot);
             await ValidateCoresAsync(plan);
             plan = plan with { ParentId = requested.ParentId, ParentStarted = requested.ParentStarted };
             string id = Guid.NewGuid().ToString("N"), helper = Path.Combine(ProtectedRoot, "installer-" + id + ".exe"), protectedJob = Path.Combine(ProtectedRoot, "job-" + id + ".json");
-            File.Copy(Path.Combine(AppPaths.BaseDir, "WorkTunnel.exe"), helper);
+            File.Copy(Path.Combine(AppPaths.BaseDir, "Culvert.exe"), helper);
             File.WriteAllText(protectedJob, JsonSerializer.Serialize(plan), AppPaths.Utf8NoBom);
             var start = new ProcessStartInfo(helper) { UseShellExecute = false, CreateNoWindow = true };
             start.ArgumentList.Add("--apply-update"); start.ArgumentList.Add(protectedJob); start.ArgumentList.Add(readyEvent); Process.Start(start)?.Dispose();
@@ -157,17 +157,17 @@ internal static class UpdateInstaller
             if (!InstallSecurity.IsAdministrator || !Path.GetFullPath(job).StartsWith(ProtectedRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) throw new UnauthorizedAccessException("Invalid updater context.");
             var plan = JsonSerializer.Deserialize<UpdatePlan>(File.ReadAllText(job)) ?? throw new InvalidDataException("Missing update job.");
             using var parent = Process.GetProcessById(plan.ParentId);
-            if (parent.StartTime.ToUniversalTime().Ticks != plan.ParentStarted || !string.Equals(parent.MainModule?.FileName, Path.Combine(plan.Target, "WorkTunnel.exe"), StringComparison.OrdinalIgnoreCase))
+            if (parent.StartTime.ToUniversalTime().Ticks != plan.ParentStarted || !string.Equals(parent.MainModule?.FileName, Path.Combine(plan.Target, "Culvert.exe"), StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("The running application does not match the update target.");
             using var relaunch = new UserLaunch(parent);
             using (var signal = EventWaitHandle.OpenExisting(readyEvent)) signal.Set();
             using var timeout = new CancellationTokenSource(45000); await parent.WaitForExitAsync(timeout.Token);
             ApplyFiles(plan, ProtectedRoot);
-            relaunch.Start(Path.Combine(plan.Target, "WorkTunnel.exe"), plan.Reconnect);
+            relaunch.Start(Path.Combine(plan.Target, "Culvert.exe"), plan.Reconnect);
         }
         catch (Exception error)
         {
-            MessageBox.Show("The update could not complete. Open Conduit again.\n\n" + error.Message, "Conduit update", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("The update could not complete. Open Culvert again.\n\n" + error.Message, "Culvert update", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
     internal static void ApplyFiles(UpdatePlan plan, string? storageRoot = null)

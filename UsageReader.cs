@@ -1,5 +1,5 @@
 #if OWNER_BUILD
-namespace WorkTunnel;
+namespace Culvert;
 internal static class UsageReader
 {
     public static async Task<string> ReadAsync()

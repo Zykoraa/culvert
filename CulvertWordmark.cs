@@ -1,17 +1,17 @@
 using System.Drawing.Drawing2D;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Decorative branding only; it never represents tunnel health or traffic.</summary>
-internal sealed class ConduitWordmark : Control, IAnimatedControl
+internal sealed class CulvertWordmark : Control, IAnimatedControl
 {
-    public ConduitWordmark()
+    public CulvertWordmark()
     {
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
             ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.SupportsTransparentBackColor, true);
         Dock = DockStyle.Fill; Margin = Padding.Empty; BackColor = Color.Transparent;
-        Font = new Font("Segoe UI", 23, FontStyle.Bold);
-        Text = "Conduit"; AccessibleName = "Conduit";
+        Font = new Font("Consolas", 23, FontStyle.Bold);
+        Text = "Culvert"; AccessibleName = "Culvert";
         AccessibleDescription = "Connected on your terms. Decorative logo.";
         AccessibleRole = AccessibleRole.StaticText; TabStop = false;
     }
@@ -51,7 +51,7 @@ internal sealed class ConduitWordmark : Control, IAnimatedControl
         }
 
         using var letters = new GraphicsPath();
-        letters.AddString("Conduit", Font.FontFamily, (int)Font.Style, Font.SizeInPoints * g.DpiY / 72,
+        letters.AddString("CULVERT", Font.FontFamily, (int)Font.Style, Font.SizeInPoints * g.DpiY / 72,
             new PointF(0, 0), StringFormat.GenericTypographic);
         var textBounds = letters.GetBounds();
         float textLeft = size + 12 * size / 34;

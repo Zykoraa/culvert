@@ -2,7 +2,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using Microsoft.Win32;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Debounces physical uplink changes, ignoring our own TUN changes.</summary>
 internal sealed class NetworkMonitor : IDisposable
@@ -64,7 +64,7 @@ internal sealed class NetworkMonitor : IDisposable
     }
     private static bool EligibleUplink(NetworkInterface n) =>
         n.NetworkInterfaceType is not (NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel) &&
-        !new[] { "worktunnel", "wintun", "vmware", "tailscale", "vethernet", "virtual" }
+        !new[] { "culvert", "wintun", "vmware", "tailscale", "vethernet", "virtual" }
             .Any(word => (n.Name + n.Description).Contains(word, StringComparison.OrdinalIgnoreCase));
     public void Dispose()
     {

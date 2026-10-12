@@ -2,7 +2,7 @@ using System.IO.Compression;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class DiagnosticRedactor
 {

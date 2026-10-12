@@ -7,13 +7,13 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>WorkTunnel</RootNamespace>
-    <AssemblyName>WorkTunnel</AssemblyName>
+    <RootNamespace>Culvert</RootNamespace>
+    <AssemblyName>Culvert</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AssemblyTitle>Conduit</AssemblyTitle>
-    <Product>Conduit</Product>
+    <AssemblyTitle>Culvert</AssemblyTitle>
+    <Product>Culvert</Product>
     <Version>2.4.3</Version>
-    <ApplicationIcon>assets/Conduit.ico</ApplicationIcon>
+    <ApplicationIcon>assets/Culvert.ico</ApplicationIcon>
 
     <!-- Distribution: one self-contained .exe; coworkers install nothing. -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -34,7 +34,7 @@
     <Compile Remove="installer\**\*.cs" />
     <Compile Remove="tools\**\*.cs" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
-    <EmbeddedResource Include="assets/Conduit.ico" LogicalName="Conduit.ico" />
+    <EmbeddedResource Include="assets/Culvert.ico" LogicalName="Culvert.ico" />
     <Content Include="configs\**\*" Exclude="configs\profile.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="licenses\**\*" Exclude="licenses\Natural-Earth.txt" CopyToOutputDirectory="PreserveNewest" />

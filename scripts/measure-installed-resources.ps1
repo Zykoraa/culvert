@@ -4,15 +4,15 @@ $ErrorActionPreference = 'Stop'
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
-public static class ConduitMeasureNative {
+public static class CulvertMeasureNative {
     [DllImport("kernel32.dll", SetLastError=true)] public static extern bool GetNamedPipeServerProcessId(IntPtr pipe, out uint process);
 }
 '@
-$installed = Join-Path $env:ProgramFiles "WorkTunnel-$Flavor\WorkTunnel.exe"
+$installed = Join-Path $env:ProgramFiles "Culvert-$Flavor\Culvert.exe"
 $version = (Get-Item -LiteralPath $installed).VersionInfo.FileVersion
 $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 function Snapshot {
-    $pipe = [IO.Pipes.NamedPipeClientStream]::new('.', "WorkTunnel.v2.$sid", [IO.Pipes.PipeDirection]::InOut, [IO.Pipes.PipeOptions]::Asynchronous)
+    $pipe = [IO.Pipes.NamedPipeClientStream]::new('.', "Culvert.v2.$sid", [IO.Pipes.PipeDirection]::InOut, [IO.Pipes.PipeOptions]::Asynchronous)
     $deadline = [Threading.CancellationTokenSource]::new([TimeSpan]::FromSeconds(8))
     try {
         $pipe.Connect(5000)
@@ -22,7 +22,7 @@ function Snapshot {
         $length = [BitConverter]::ToInt32($header,0); if ($length -lt 1 -or $length -gt 16384) { throw 'Invalid bounded host response' }
         $buffer = [byte[]]::new($length); [void]$pipe.ReadExactlyAsync([Memory[byte]]::new($buffer),$deadline.Token).AsTask().GetAwaiter().GetResult()
         [uint32]$hostProcess = 0
-        if (-not [ConduitMeasureNative]::GetNamedPipeServerProcessId($pipe.SafePipeHandle.DangerousGetHandle(),[ref]$hostProcess)) { throw 'Host identity unavailable' }
+        if (-not [CulvertMeasureNative]::GetNamedPipeServerProcessId($pipe.SafePipeHandle.DangerousGetHandle(),[ref]$hostProcess)) { throw 'Host identity unavailable' }
         $state = [Text.Encoding]::UTF8.GetString($buffer) | ConvertFrom-Json
         return @{Host=$hostProcess;Xray=$state.Xray;SingBox=$state.SingBox;Verified=$state.Verified;Desired=$state.Desired}
     } finally { $pipe.Dispose(); $deadline.Dispose() }
@@ -34,7 +34,7 @@ $lastTime = 0.0; $nextUpdate = 60.0
 do {
     $state = Snapshot
     $targets = @(@{Role='Host';Id=$state.Host},@{Role='Xray';Id=$state.Xray},@{Role='sing-box';Id=$state.SingBox})
-    $dashboard = @(Get-Process -Name WorkTunnel -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $state.Host -and $_.Path -eq $installed })
+    $dashboard = @(Get-Process -Name Culvert -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $state.Host -and $_.Path -eq $installed })
     foreach ($ui in $dashboard) { $targets += @{Role='Dashboard';Id=$ui.Id} }
     $time = $clock.Elapsed.TotalSeconds
     $measurements = foreach ($target in $targets) {

@@ -1,4 +1,4 @@
-# Render the same three C channels as ConduitWordmark into Windows icon sizes.
+# Render the same three C channels as CulvertWordmark into Windows icon sizes.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $root = Split-Path $PSScriptRoot -Parent
@@ -11,7 +11,7 @@ $frames = foreach ($size in $sizes) {
     $g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.ScaleTransform(4,4)
     $g.Clear([Drawing.Color]::Transparent)
-    $background = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(23,25,35))
+    $background = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(8,7,9))
     $outline = [Drawing.Drawing2D.GraphicsPath]::new()
     $radius = [single]($size * .36)
     $edge = [single]($size - 1)
@@ -24,7 +24,7 @@ $frames = foreach ($size in $sizes) {
     for ($ring = 0; $ring -lt 3; $ring++) {
         $inset = $ring * $channel * .14; $diameter = $channel - 2 * $inset
         $rect = [Drawing.RectangleF]::new($origin+$inset,$origin+$inset,$diameter,$diameter)
-        $gradient = [Drawing.Drawing2D.LinearGradientBrush]::new($rect,[Drawing.Color]::FromArgb(112,185,216),[Drawing.Color]::FromArgb(211,157,185),[single]35)
+        $gradient = [Drawing.Drawing2D.LinearGradientBrush]::new($rect,[Drawing.Color]::FromArgb(255,65,88),[Drawing.Color]::FromArgb(255,145,156),[single]35)
         $pen = [Drawing.Pen]::new($gradient,[single]([Math]::Max(.9,$channel*.055)))
         $pen.StartCap = $pen.EndCap = [Drawing.Drawing2D.LineCap]::Round
         $g.DrawArc($pen,$rect,42,276)
@@ -32,7 +32,7 @@ $frames = foreach ($size in $sizes) {
         $x = $rect.Left+$diameter/2+[Math]::Cos($angle)*$diameter/2
         $y = $rect.Top+$diameter/2+[Math]::Sin($angle)*$diameter/2
         $dot = [Math]::Max(.8,$channel*.065)
-        $light = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(225,224,237))
+        $light = [Drawing.SolidBrush]::new([Drawing.Color]::FromArgb(255,224,230))
         $g.FillEllipse($light,[single]($x-$dot/2),[single]($y-$dot/2),[single]$dot,[single]$dot)
         $light.Dispose(); $pen.Dispose(); $gradient.Dispose()
     }
@@ -46,7 +46,7 @@ $frames = foreach ($size in $sizes) {
     $bytes = $stream.ToArray(); $small.Dispose(); $stream.Dispose()
     [pscustomobject]@{Size=$size; Bytes=$bytes}
 }
-$output = [IO.File]::Create((Join-Path $assets 'Conduit.ico'))
+$output = [IO.File]::Create((Join-Path $assets 'Culvert.ico'))
 $writer = [IO.BinaryWriter]::new($output)
 try {
     $writer.Write([uint16]0); $writer.Write([uint16]1); $writer.Write([uint16]$frames.Count)
@@ -60,4 +60,4 @@ try {
     }
     foreach ($frame in $frames) { $writer.Write([byte[]]$frame.Bytes) }
 } finally { $writer.Dispose(); $output.Dispose() }
-Write-Host 'Rendered Conduit.ico: 16 through 256 pixels.'
+Write-Host 'Rendered Culvert.ico: 16 through 256 pixels.'

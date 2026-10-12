@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class NativeChecks
 {
@@ -24,7 +24,7 @@ internal static class NativeChecks
     public static async Task CheckBroker(Action<bool, string> check)
     {
         RequireDisposableRunner();
-        string app = Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe");
+        string app = Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe");
         using var host = Process.Start(new ProcessStartInfo(app) { Arguments = "--tunnel-host", UseShellExecute = false, CreateNoWindow = true })!;
         try
         {
@@ -67,7 +67,7 @@ internal static class NativeChecks
         bool ipv6 = await Tcp("2606:4700:4700::1111", 443);
         using var echo = new TcpListener(IPAddress.Loopback, 0); echo.Start();
         int echoPort = ((IPEndPoint)echo.LocalEndpoint).Port;
-        string folder = Path.Combine(Path.GetTempPath(), "WorkTunnel-native-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(folder);
+        string folder = Path.Combine(Path.GetTempPath(), "Culvert-native-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(folder);
         Process? tun = null, ipv6Fixture = null;
         using var mock = new TcpListener(IPAddress.Loopback, 0); mock.Start();
         using var udpMock = new UdpClient(new IPEndPoint(IPAddress.Loopback, 0));
@@ -120,14 +120,14 @@ internal static class NativeChecks
         {
             // Real reachable IPv6 packets on a separate non-exempt interface, even on IPv4-only CI hosts.
             // This exercises transport filtering; it does not establish IPv6 internet availability.
-            ipv6Fixture = StartTun("conduit-v6", ["172.29.0.1/30", "fdcd:203::1/126"], [externalV6 + "/128"]);
+            ipv6Fixture = StartTun("culvert-v6", ["172.29.0.1/30", "fdcd:203::1/126"], [externalV6 + "/128"]);
             for (int i = 0; i < 40 && !ipv6Fixture.HasExited; i++)
             {
-                if (NetworkInterface.GetAllNetworkInterfaces().Any(n => n.Name == "conduit-v6" && n.OperationalStatus == OperationalStatus.Up &&
+                if (NetworkInterface.GetAllNetworkInterfaces().Any(n => n.Name == "culvert-v6" && n.OperationalStatus == OperationalStatus.Up &&
                     n.GetIPProperties().UnicastAddresses.Any(a => a.Address.ToString() == "fdcd:203::1" && a.DuplicateAddressDetectionState == DuplicateAddressDetectionState.Preferred))) break;
                 await Task.Delay(250);
             }
-            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces().Where(n => n.Name == "conduit-v6"))
+            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces().Where(n => n.Name == "culvert-v6"))
                 Console.WriteLine("INFO fixture interface: " + nic.OperationalStatus + " " + string.Join(", ", nic.GetIPProperties().UnicastAddresses.Select(a => a.Address + " " + a.DuplicateAddressDetectionState)));
             bool fixtureReady = false;
             for (int attempt = 0; attempt < 3 && !ipv6Fixture.HasExited && !fixtureReady; attempt++) { fixtureReady = await Tcp(externalV6, 80, true); if (!fixtureReady) await Task.Delay(500); }
@@ -159,7 +159,7 @@ internal static class NativeChecks
             check(!await Tcp(externalV6, 80), "IPv6 blocking survives the applying process exiting");
 
             // Route ONLY a documentation/test address to a real TUN; mock SOCKS returns a deterministic response.
-            tun = StartTun("worktunnel", ["172.19.0.1/30", "fdcd:204::1/126"], ["198.51.100.1/32", tunnelV6 + "/128"]);
+            tun = StartTun("culvert", ["172.20.0.1/30", "fdcd:204::1/126"], ["198.51.100.1/32", tunnelV6 + "/128"]);
             ulong luid = 0;
             for (int i = 0; i < 40 && luid == 0 && !tun.HasExited; i++) { await Task.Delay(250); luid = NetworkLock.TunnelLuid(); }
             check(luid != 0, "Bundled sing-box creates the test TUN adapter");
@@ -201,7 +201,7 @@ internal static class NativeChecks
         if (result != 0) throw new System.ComponentModel.Win32Exception((int)result);
         try
         {
-            Guid key = new("95a2e590-31dd-440a-91a3-000000000004");
+            Guid key = new("d83ac08b-54af-4fa3-8cc6-000000000004");
             result = Windows.Win32.PInvoke.FwpmFilterDeleteByKey0(engine, &key);
             if (result != 0) throw new System.ComponentModel.Win32Exception((int)result);
         }

@@ -1,12 +1,12 @@
 using System.Net;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class DeviceLink
 {
     public static string Create(Profile profile)
     {
-        if (profile.Imported != null) throw new FormatException("This profile was imported from v2rayN. Export its original link from v2rayN; Conduit will not produce a link that loses transport settings.");
+        if (profile.Imported != null) throw new FormatException("This profile was imported from v2rayN. Export its original link from v2rayN; Culvert will not produce a link that loses transport settings.");
         if (!profile.IsValid || string.IsNullOrWhiteSpace(profile.PublicKey) || string.IsNullOrWhiteSpace(profile.ShortId))
             throw new FormatException("The connection profile is incomplete.");
         return $"vless://{profile.Uuid}@{profile.Server}:{profile.Port}?encryption=none&flow=xtls-rprx-vision" +

@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal interface IAnimatedControl { void RefreshMotion(); }
 

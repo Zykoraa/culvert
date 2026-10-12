@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Offline checks of the actual published executable. Never connects or installs.</summary>
 internal static class ReleaseSmokeChecks
@@ -36,7 +36,7 @@ internal static class ReleaseSmokeChecks
                 Check(JsonSerializer.Serialize(copy) == json, "JSON round trip " + typeof(T).Name);
                 return copy;
             }
-            Check(typeof(TunnelController).FullName != "WorkTunnel.TunnelController", "Implementation types are renamed in the published executable");
+            Check(typeof(TunnelController).FullName != "Culvert.TunnelController", "Implementation types are renamed in the published executable");
             Check(typeof(DeviceLink).GetMethod("Parse") == null, "Implementation methods are renamed");
             Check(new Profile().Server == "" && !new Profile().IsValid, "Published app starts without a default server or device identity");
             var profile = new Profile { User = "Release fixture", Server = "203.0.113.7", Uuid = "11111111-2222-4333-8444-555555555555", Sni = "example.com", PublicKey = new string('A', 43), ShortId = "aabb" };
@@ -73,7 +73,7 @@ internal static class ReleaseSmokeChecks
             using (var feedKey = ECDsa.Create(ECCurve.NamedCurves.nistP256))
             {
                 byte[] feedPublic = feedKey.ExportSubjectPublicKeyInfo(); var now = DateTimeOffset.UtcNow;
-                var feed = new UpdateFeedManifest(1, "stable", UpdateInstaller.Flavor, "99.0.0", $"Conduit-{UpdateInstaller.Flavor}-99.0.0.wtupdate",
+                var feed = new UpdateFeedManifest(1, "stable", UpdateInstaller.Flavor, "99.0.0", $"Culvert-{UpdateInstaller.Flavor}-99.0.0.wtupdate",
                     new string('0', 64), 1024, now, now.AddDays(30), Convert.ToHexString(SHA256.HashData(feedPublic)).ToLowerInvariant());
                 Check(UpdateFeedCodec.Verify(UpdateFeedCodec.Sign(feed, feedKey), feedPublic, UpdateInstaller.Flavor, now) == feed,
                     "Signed update-feed contracts and verification survive obfuscation");
@@ -93,7 +93,7 @@ internal static class ReleaseSmokeChecks
             Check(TunnelState.Connected.ToString() == "Connected", "Diagnostic enum names remain readable");
             using var icon = BrandIcon.WithStatus(Color.Cyan);
             Check(icon.Width > 0, "Embedded icon and native handle cleanup");
-            Check(!typeof(ReleaseSmokeChecks).Assembly.GetManifestResourceNames().Contains("Conduit.world-land.json"), "Unused map geometry is absent from the release");
+            Check(!typeof(ReleaseSmokeChecks).Assembly.GetManifestResourceNames().Contains("Culvert.world-land.json"), "Unused map geometry is absent from the release");
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2); Application.EnableVisualStyles();
             using var controller = new TunnelController { AutoHeal = false };
             using var dashboard = new DashboardForm(controller, persistHistory: false);
@@ -108,7 +108,7 @@ internal static class ReleaseSmokeChecks
             Check(true, "All dashboard pages construct and render without starting a tunnel");
             if (installer)
             {
-                using var payload = typeof(ReleaseSmokeChecks).Assembly.GetManifestResourceStream("WorkTunnel.payload") ?? throw new InvalidDataException("Missing installer payload");
+                using var payload = typeof(ReleaseSmokeChecks).Assembly.GetManifestResourceStream("Culvert.payload") ?? throw new InvalidDataException("Missing installer payload");
                 using var zip = new ZipArchive(payload, ZipArchiveMode.Read);
                 byte[] Read(string name) { using var source = zip.GetEntry(name)!.Open(); using var memory = new MemoryStream(); source.CopyTo(memory); return memory.ToArray(); }
                 var signed = ReleaseSignature.Verify(Read("release.json"), Read("release.sig"), ReleaseTrust.PublicKey);

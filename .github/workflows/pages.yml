@@ -1,4 +1,4 @@
-name: Publish signed Conduit downloads
+name: Publish signed Culvert downloads
 on:
   release:
     types: [published]
@@ -38,7 +38,7 @@ jobs:
           cp distribution/pages/index.html public/index.html
           touch public/.nojekyll
           for flavor in Owner Client; do
-            for asset in "Conduit-$flavor-$version-Setup.exe" "Conduit-$flavor-$version.wtupdate" "Conduit-$flavor-stable.json"; do
+            for asset in "Culvert-$flavor-$version-Setup.exe" "Culvert-$flavor-$version.wtupdate" "Culvert-$flavor-stable.json"; do
               gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
             done
           done
@@ -51,7 +51,7 @@ jobs:
           html = (folder / 'index.html').read_text()
           html = html.replace('{{VERSION}}', version)
           for flavor in ('Owner', 'Client'):
-              digest = hashlib.sha256((folder / f'Conduit-{flavor}-{version}-Setup.exe').read_bytes()).hexdigest()
+              digest = hashlib.sha256((folder / f'Culvert-{flavor}-{version}-Setup.exe').read_bytes()).hexdigest()
               html = html.replace('{{' + flavor.upper() + '_HASH}}', digest)
           assert '{{' not in html, 'Unresolved page placeholder'
           (folder / 'index.html').write_text(html)

@@ -1,18 +1,18 @@
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class V2rayImportForm : Form
 {
     private readonly CancellationTokenSource _stop = new();
     public V2rayImportForm()
     {
-        Text = "Import from v2rayN · Conduit"; Size = new(760, 740); MinimumSize = new(660, 560);
+        Text = "Import from v2rayN · Culvert"; Size = new(760, 740); MinimumSize = new(660, 560);
         BackColor = Background; ForeColor = DashboardTheme.Text; Font = new("Segoe UI", 10); StartPosition = FormStartPosition.CenterParent; StyleCaption(this);
         var grid = Grid(100); grid.Padding = new(24); grid.RowCount = 8;
         foreach (int h in new[] { 78, 32, 45, 42, 38, 130, 90, 52 }) grid.RowStyles.Add(new(SizeType.Absolute, h));
         Controls.Add(grid);
-        grid.Controls.Add(Label("Use the server you already have in v2rayN.\nSelect that server and connect once in v2rayN to generate its Xray config, then close v2rayN before connecting with Conduit.", 11), 0, 0);
+        grid.Controls.Add(Label("Use the server you already have in v2rayN.\nSelect that server and connect once in v2rayN to generate its Xray config, then close v2rayN before connecting with Culvert.", 11), 0, 0);
         grid.Controls.Add(Label("v2rayN Xray configuration", 10, Muted), 0, 1);
         var paths = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDown, AccessibleName = "v2rayN config path" };
         foreach (var candidate in V2rayImport.FindCandidates()) paths.Items.Add(candidate);
@@ -23,9 +23,9 @@ internal sealed class V2rayImportForm : Form
         select.Controls.Add(browse, 1, 0); grid.Controls.Add(select, 0, 2);
         grid.Controls.Add(Label("Expected public exit IPv4 (optional; use if your server exits through another IP)", 10, Muted), 0, 3);
         var expected = new TextBox { Dock = DockStyle.Fill, PlaceholderText = "Blank: use the server address", AccessibleName = "Expected exit IPv4" }; grid.Controls.Add(expected, 0, 4);
-        var summary = Label("Only the selected server is imported. Conduit supplies its own full-device routing, DNS, network lock and bundled engines. v2rayN subscriptions, routing rules, certificates and plugins are not imported.\n\nSupported: VLESS / VMess / Trojan / Shadowsocks, TCP / WebSocket / gRPC, TLS / REALITY. Unsupported settings are rejected.", 10, Muted);
+        var summary = Label("Only the selected server is imported. Culvert supplies its own full-device routing, DNS, network lock and bundled engines. v2rayN subscriptions, routing rules, certificates and plugins are not imported.\n\nSupported: VLESS / VMess / Trojan / Shadowsocks, TCP / WebSocket / gRPC, TLS / REALITY. Unsupported settings are rejected.", 10, Muted);
         grid.Controls.Add(summary, 0, 5);
-        var status = Label("Your existing Conduit profile stays in place until validation succeeds and you choose Save.", 10, Blue); grid.Controls.Add(status, 0, 6);
+        var status = Label("Your existing Culvert profile stays in place until validation succeeds and you choose Save.", 10, Blue); grid.Controls.Add(status, 0, 6);
         var actions = new FlowLayoutPanel { Dock = DockStyle.Fill };
         var inspect = new Button { Text = "Read and validate", AutoSize = true, Height = 36 };
         var save = new Button { Text = "Save imported server", AutoSize = true, Height = 36, Enabled = false };

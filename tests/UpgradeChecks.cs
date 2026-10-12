@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using WorkTunnel;
+using Culvert;
 
 internal static class UpgradeChecks
 {
@@ -42,7 +42,7 @@ internal static class UpgradeChecks
             check(bounded.Destinations.Length == 24 && wire.Length < 16388, "Unicode destination names fit the bounded broker envelope");
         }
 
-        string root = Path.Combine(Path.GetTempPath(), "Conduit-upgrade-" + Guid.NewGuid().ToString("N"));
+        string root = Path.Combine(Path.GetTempPath(), "Culvert-upgrade-" + Guid.NewGuid().ToString("N"));
         SecretStore.RestrictDirectory(root);
         try
         {

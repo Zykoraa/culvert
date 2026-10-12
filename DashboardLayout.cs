@@ -1,6 +1,6 @@
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed partial class DashboardForm
 {
@@ -96,7 +96,7 @@ internal sealed partial class DashboardForm
         connectionLayout.Controls.Add(_connectionNote, 0, 0);
         var destinationPanel = new DashboardSurface { Padding = new(12), Margin = new(0, 0, 0, 12) }; destinationPanel.Controls.Add(_destinations);
         _destinations.Columns.Add("Destination", 260); _destinations.Columns.Add("Protocol / activity", 150); _destinations.Columns.Add("Transferred", 130);
-        _destinations.AccessibleName = "Live destinations from Conduit's tunnel"; _destinations.MultiSelect = false; _destinations.HideSelection = false;
+        _destinations.AccessibleName = "Live destinations from Culvert's tunnel"; _destinations.MultiSelect = false; _destinations.HideSelection = false;
         _destinations.OwnerDraw = true;
         _destinations.DrawColumnHeader += (_, e) =>
         {
@@ -163,7 +163,7 @@ internal sealed partial class DashboardForm
             catch (Exception e) when (e is IOException or UnauthorizedAccessException) { _status.Text = "Visual preference could not be saved."; }
         };
         performance.Controls.Add(load); Add(settingLayout, performance);
-        var loadHint = Label("Balanced samples visible traffic once per second. Low power samples every two seconds and stops decorative animation. On battery, Conduit uses Low power automatically. Background sampling slows to five seconds; hidden or minimized dashboard sampling pauses. The tunnel host continues connection protection.", 10, Muted);
+        var loadHint = Label("Balanced samples visible traffic once per second. Low power samples every two seconds and stops decorative animation. On battery, Culvert uses Low power automatically. Background sampling slows to five seconds; hidden or minimized dashboard sampling pauses. The tunnel host continues connection protection.", 10, Muted);
         loadHint.AutoSize = true; loadHint.Padding = new(8, 6, 8, 12); Add(settingLayout, loadHint);
         var options = Flow(); _auto.Checked = _controller.AutoHeal;
         _auto.CheckedChanged += (_, _) => { if (_controller.AutoHeal != _auto.Checked) { _controller.AutoHeal = _auto.Checked; Preferences.Save(_auto.Checked); } };

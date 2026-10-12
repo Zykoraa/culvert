@@ -1,4 +1,4 @@
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Connection alerts follow lifecycle transitions, independently of probe results.</summary>
 internal sealed class TrayNotificationPolicy

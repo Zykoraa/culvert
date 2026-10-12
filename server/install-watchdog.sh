@@ -25,7 +25,7 @@ alert() {
 
 if systemctl is-active --quiet xray && listening; then
   [ "$(cat "$STATE" 2>/dev/null)" = "down" ] && \
-    alert "RECOVERED: WorkTunnel xray is back and listening on :443 ($(hostname))."
+    alert "RECOVERED: Culvert xray is back and listening on :443 ($(hostname))."
   echo up > "$STATE"; exit 0
 fi
 
@@ -34,8 +34,8 @@ echo down > "$STATE"
 NOTE="down at $(date -u +%FT%TZ)."
 
 # 1) fix the known failure mode: config perms / SELinux label
-chown root:root "$CFG" 2>/dev/null || true
-chmod 644 "$CFG" 2>/dev/null || true
+chown root:xray "$CFG" 2>/dev/null || true
+chmod 640 "$CFG" 2>/dev/null || true
 restorecon "$CFG" 2>/dev/null || true
 
 # 2) if the config won't even parse, restore the newest good backup
@@ -50,9 +50,9 @@ systemctl restart xray 2>/dev/null || true
 sleep 3
 
 if systemctl is-active --quiet xray && listening; then
-  alert "AUTO-HEALED: WorkTunnel xray was down, restarted, now on :443 ($(hostname)). $NOTE"
+  alert "AUTO-HEALED: Culvert xray was down, restarted, now on :443 ($(hostname)). $NOTE"
 else
-  alert "ALERT: WorkTunnel xray is DOWN and auto-heal FAILED ($(hostname)). $NOTE Manual attention needed."
+  alert "ALERT: Culvert xray is DOWN and auto-heal FAILED ($(hostname)). $NOTE Manual attention needed."
 fi
 WD
 chmod 755 /usr/local/bin/tunnel-watchdog.sh
@@ -60,7 +60,7 @@ chmod 755 /usr/local/bin/tunnel-watchdog.sh
 # ---------------------------------------------------------------- systemd units
 cat > /etc/systemd/system/tunnel-watchdog.service <<'SVC'
 [Unit]
-Description=WorkTunnel xray health watchdog
+Description=Culvert xray health watchdog
 After=network-online.target
 [Service]
 Type=oneshot
@@ -69,7 +69,7 @@ SVC
 
 cat > /etc/systemd/system/tunnel-watchdog.timer <<'TMR'
 [Unit]
-Description=Run WorkTunnel watchdog every minute
+Description=Run Culvert watchdog every minute
 [Timer]
 OnBootSec=60
 OnUnitActiveSec=60

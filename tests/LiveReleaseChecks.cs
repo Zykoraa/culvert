@@ -2,7 +2,7 @@ using System.IO.Pipes;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class LiveReleaseChecks
 {
@@ -18,7 +18,7 @@ internal static class LiveReleaseChecks
             using var discovery = UpdateDiscovery.ForController(controller);
             using var deadline = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             var release = await discovery.CheckAsync(new(address), deadline.Token);
-            string storage = Path.Combine(Path.GetTempPath(), "Conduit-feed-check-" + Guid.NewGuid().ToString("N"));
+            string storage = Path.Combine(Path.GetTempPath(), "Culvert-feed-check-" + Guid.NewGuid().ToString("N"));
             string? bundle = null;
             try
             {

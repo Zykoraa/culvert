@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Tray-only UI: one Connect/Disconnect control, live status, and the extras.</summary>
 internal sealed class TrayContext : ApplicationContext
@@ -99,7 +99,7 @@ internal sealed class TrayContext : ApplicationContext
         _icon = new NotifyIcon
         {
             Icon = _gray,
-            Text = "Conduit — Disconnected",
+            Text = "Culvert — Disconnected",
             Visible = true,
             ContextMenuStrip = menu
         };
@@ -107,9 +107,9 @@ internal sealed class TrayContext : ApplicationContext
 
         _ctrl.StatusChanged += OnStatus;
         _ctrl.Notice += (msg, kind) => Post(() =>
-            _icon.ShowBalloonTip(kind == NoticeKind.Info ? 3000 : 4000, "Conduit", msg, MapIcon(kind)));
+            _icon.ShowBalloonTip(kind == NoticeKind.Info ? 3000 : 4000, "Culvert", msg, MapIcon(kind)));
 #if OWNER_BUILD
-        _cover.Progress += m => Post(() => _icon.ShowBalloonTip(2500, "Conduit — cover site", m, ToolTipIcon.Info));
+        _cover.Progress += m => Post(() => _icon.ShowBalloonTip(2500, "Culvert — cover site", m, ToolTipIcon.Info));
 #endif
         Application.ApplicationExit += (_, _) => Cleanup();
         _dashboard = new DashboardForm(_ctrl);
@@ -136,7 +136,7 @@ internal sealed class TrayContext : ApplicationContext
         if (!p.IsValid)
         {
             MessageBox.Show("Open the dashboard and import this device's connection link first.",
-                "Conduit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                "Culvert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
         try { await _ctrl.ConnectAsync(); } catch (Exception e) { MessageBox.Show(e.Message, "Connect"); }
@@ -149,7 +149,7 @@ internal sealed class TrayContext : ApplicationContext
             bool ok = _autoItem.Checked ? AutoStart.Enable() : AutoStart.Disable();
             _autoItem.Checked = AutoStart.IsEnabled();
             if (!ok)
-                MessageBox.Show("Could not change the auto-start task.", "Conduit",
+                MessageBox.Show("Could not change the auto-start task.", "Culvert",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         catch { }
@@ -201,20 +201,20 @@ internal sealed class TrayContext : ApplicationContext
     {
         if (File.Exists(Path.Combine(AppPaths.DataDir, "pending-device-operation.json")))
         {
-            MessageBox.Show("Finish the pending change in Your devices before switching the cover site.", "Conduit");
+            MessageBox.Show("Finish the pending change in Your devices before switching the cover site.", "Culvert");
             return;
         }
         if (_coverBusy) return;
         if (string.Equals(Profile.Load().Sni, site.Sni, StringComparison.OrdinalIgnoreCase))
         {
-            _icon.ShowBalloonTip(2000, "Conduit", $"Already on {site.Name}.", ToolTipIcon.Info);
+            _icon.ShowBalloonTip(2000, "Culvert", $"Already on {site.Name}.", ToolTipIcon.Info);
             return;
         }
         var confirm = MessageBox.Show(
             $"Switch the tunnel's cover to {site.Name} ({site.Sni})?\n\n" +
             "This briefly drops the connection while it re-establishes. If the new cover " +
             "doesn't work, it auto-reverts within ~90 seconds.",
-            "Conduit — switch cover site", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            "Culvert — switch cover site", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
         if (confirm != DialogResult.OK) return;
 
         _coverBusy = true;
@@ -225,7 +225,7 @@ internal sealed class TrayContext : ApplicationContext
             Post(() =>
             {
                 RefreshCoverChecks();
-                _icon.ShowBalloonTip(4000, "Conduit — cover site", message,
+                _icon.ShowBalloonTip(4000, "Culvert — cover site", message,
                     ok ? ToolTipIcon.Info : ToolTipIcon.Warning);
             });
         }
@@ -254,14 +254,14 @@ internal sealed class TrayContext : ApplicationContext
         _icon.Icon = icon;
         _autoHealItem.Checked = _ctrl.AutoHeal;
         _statusItem.Text = e.Message;
-        _icon.Text = Trunc("Conduit — " + e.Message, 63);
+        _icon.Text = Trunc("Culvert — " + e.Message, 63);
         RefreshCoverChecks();
 
         _connectItem.Enabled = e.State is TunnelState.Disconnected or TunnelState.Faulted;
         _disconnectItem.Enabled = e.State is TunnelState.Connecting or TunnelState.Connected or TunnelState.Faulted;
 
         if (_notifications.Observe(e) is { } notice)
-            _icon.ShowBalloonTip(notice == NoticeKind.Info ? 2500 : 4000, "Conduit", e.Message, MapIcon(notice));
+            _icon.ShowBalloonTip(notice == NoticeKind.Info ? 2500 : 4000, "Culvert", e.Message, MapIcon(notice));
     }
 
     private static ToolTipIcon MapIcon(NoticeKind k) => k switch

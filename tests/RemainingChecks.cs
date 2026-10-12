@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
-using WorkTunnel;
+using Culvert;
 
 internal static class RemainingChecks
 {
@@ -76,7 +76,7 @@ internal static class RemainingChecks
                 "Adapter settling can be interrupted safely by " + interrupt);
         }
 
-        string root = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "Conduit-incidents-" + Guid.NewGuid().ToString("N")));
+        string root = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "Culvert-incidents-" + Guid.NewGuid().ToString("N")));
         SecretStore.RestrictDirectory(root);
         try
         {
@@ -119,7 +119,7 @@ internal static class RemainingChecks
         }
         finally
         {
-            if (!root.StartsWith(Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar + "Conduit-incidents-", StringComparison.OrdinalIgnoreCase))
+            if (!root.StartsWith(Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar + "Culvert-incidents-", StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Unsafe test cleanup path.");
             Directory.Delete(root, true);
         }

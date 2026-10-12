@@ -3,13 +3,13 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record UpdateOptions(string Feed = "", bool Automatic = false, string? HighestSeen = null, DateTimeOffset? LastChecked = null);
 internal static class UpdatePreferences
 {
     internal static string OfficialFeed(string flavor) => flavor is "Owner" or "Client"
-        ? "https://zykoraa.github.io/conduit/Conduit-" + flavor + "-stable.json"
+        ? "https://zykoraa.github.io/culvert/Culvert-" + flavor + "-stable.json"
         : throw new ArgumentException("Invalid update flavor.");
     private static UpdateOptions DefaultOptions() => new(OfficialFeed(UpdateInstaller.Flavor));
     internal static string PathName => Path.Combine(AppPaths.DataDir, "update-feed.json");
@@ -50,7 +50,7 @@ internal sealed class UpdateDiscovery : IDisposable
     internal UpdateDiscovery(HttpMessageHandler handler, Func<bool> allowed, byte[]? publicKey = null, string? flavor = null)
     {
         _http = new(handler) { Timeout = Timeout.InfiniteTimeSpan };
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("Conduit/" + typeof(UpdateDiscovery).Assembly.GetName().Version);
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("Culvert/" + typeof(UpdateDiscovery).Assembly.GetName().Version);
         _allowed = allowed; _publicKey = publicKey ?? ReleaseTrust.PublicKey; _flavor = flavor ?? UpdateInstaller.Flavor;
     }
     internal static UpdateDiscovery ForController(ITunnelController controller)

@@ -1,5 +1,5 @@
 using System.Text.Json;
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class WindowPreferences
 {

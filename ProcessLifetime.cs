@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Windows.Win32;
 using Windows.Win32.System.JobObjects;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Children inherit the host's job. A host crash closes its last handle and stops both cores.</summary>
 internal static unsafe class ProcessLifetime

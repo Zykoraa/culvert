@@ -1,13 +1,13 @@
 using System.Text.Json;
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class FirstRunForm : Form
 {
     public FirstRunForm()
     {
-        Text = "Set up this device · Conduit"; ClientSize = new(820, 470); MinimumSize = new(780, 440);
+        Text = "Set up this device · Culvert"; ClientSize = new(820, 470); MinimumSize = new(780, 440);
         StartPosition = FormStartPosition.CenterParent; BackColor = Background; ForeColor = DashboardTheme.Text; Font = new("Segoe UI", 11); StyleCaption(this);
         var layout = Grid(100); layout.Padding = new(24); layout.RowCount = 4;
         foreach (int height in new[] { 140, 120, 65, 60 }) layout.RowStyles.Add(new(SizeType.Absolute, height));
@@ -20,7 +20,7 @@ internal sealed class FirstRunForm : Form
         save.Click += (_, _) => { try { DeviceLink.Parse(input.Text).Save(); DialogResult = DialogResult.OK; } catch (Exception e) { status.Text = e.Message; } };
         legacy.Click += (_, _) =>
         {
-            using var file = new OpenFileDialog { Filter = "Previous WorkTunnel / Conduit profile|profile.json", Title = "Select configs/profile.json from the previous installation" };
+            using var file = new OpenFileDialog { Filter = "Previous Culvert / Culvert profile|profile.json", Title = "Select configs/profile.json from the previous installation" };
             if (file.ShowDialog(this) != DialogResult.OK) return;
             try { ImportLegacy(File.ReadAllText(file.FileName)).Save(); DialogResult = DialogResult.OK; }
             catch (Exception e) { status.Text = e.Message; }

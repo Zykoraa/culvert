@@ -31,17 +31,34 @@ jobs:
       - name: Behavioral and disposable-machine network tests
         shell: pwsh
         run: |
-          dotnet run --project tests/WorkTunnel.Checks.csproj -c Release -p:OwnerBuild=true
+          dotnet run --project tests/Culvert.Checks.csproj -c Release -p:OwnerBuild=true
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet run --project tests/WorkTunnel.Checks.csproj -c Release -p:OwnerBuild=false -- --native cores/sing_box/sing-box.exe
+          dotnet run --project tests/Culvert.Checks.csproj -c Release -p:OwnerBuild=false -- --native cores/sing_box/sing-box.exe
       - name: Build dashboard and installer
         shell: pwsh
         run: |
           dotnet build -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet build installer/WorkTunnel.Setup.csproj -c Release
+          dotnet build installer/Culvert.Setup.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet build tests/UI/WorkTunnel.UiChecks.csproj -c Release
+          dotnet build tests/UI/Culvert.UiChecks.csproj -c Release
+      - name: Capture Culvert dashboard and check navigation
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/private/preview | Out-Null
+          $preview = Join-Path $PWD 'tests/UI/bin/Release/net10.0-windows/Culvert.UiChecks.dll'
+          $snapshot = Join-Path $PWD 'artifacts/private/preview/Culvert-dashboard.png'
+          $process = Start-Process dotnet -ArgumentList @(('"' + $preview + '"'), '--demo', '--interaction-checks', '--snapshot', ('"' + $snapshot + '"')) -PassThru -Wait
+          if ($process.ExitCode -ne 0) {
+            Get-Content tests/UI/bin/Release/net10.0-windows/layout-check.txt -ErrorAction SilentlyContinue
+            throw 'Dashboard navigation/layout checks failed.'
+          }
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: Culvert-preview
+          path: artifacts/private/preview/
+          if-no-files-found: warn
       - name: Test-signed blank installer and repair lifecycle
         shell: pwsh
         run: |

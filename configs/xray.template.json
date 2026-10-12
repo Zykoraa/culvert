@@ -1,7 +1,7 @@
 {
   "log": { "loglevel": "warning" },
   "inbounds": [
-    { "listen": "127.0.0.1", "port": 10808, "protocol": "socks", "settings": { "udp": true } }
+    { "listen": "127.0.0.1", "port": 11808, "protocol": "socks", "settings": { "udp": true } }
   ],
   "outbounds": [
     {

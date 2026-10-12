@@ -5,7 +5,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text.Json;
 using Microsoft.Win32;
-using WorkTunnel;
+using Culvert;
 
 internal static class SetupProgram
 {
@@ -22,10 +22,10 @@ internal static class SetupProgram
                 if (args[0] == "--uninstall") Uninstall(); else Install();
                 return 0;
             }
-            using var form = new Form { Text = "Conduit Setup", ClientSize = new(650, 320), StartPosition = FormStartPosition.CenterScreen,
+            using var form = new Form { Text = "Culvert Setup", ClientSize = new(650, 320), StartPosition = FormStartPosition.CenterScreen,
                 Font = new("Segoe UI", 11), BackColor = DashboardTheme.Background, ForeColor = DashboardTheme.Text, Padding = new(24) };
             DashboardTheme.StyleCaption(form);
-            var instructions = new Label { Dock = DockStyle.Fill, Text = "Conduit\nConnected on your terms.\n\nThe dashboard runs normally. Only the tunnel host asks for administrator approval. Each device imports its own connection link; this installer contains no enrolled identity.\n\nClose Conduit and stop its tunnel before installing, repairing or removing it. Your encrypted user profile is kept during these operations." };
+            var instructions = new Label { Dock = DockStyle.Fill, Text = "Culvert\nConnected on your terms.\n\nThe dashboard runs normally. Only the tunnel host asks for administrator approval. Each device imports its own connection link; this installer contains no enrolled identity.\n\nClose Culvert and stop its tunnel before installing, repairing or removing it. Your encrypted user profile is kept during these operations." };
             var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 50 };
             foreach (string action in new[] { "Install", "Repair", "Uninstall" })
             {
@@ -39,8 +39,8 @@ internal static class SetupProgram
                         start.ArgumentList.Add("--" + action.ToLowerInvariant());
                         using var process = Process.Start(start) ?? throw new IOException("Setup did not start."); await process.WaitForExitAsync();
                         if (process.ExitCode != 0) throw new IOException("Setup did not complete. The earlier error explains why.");
-                        instructions.Text = action == "Uninstall" ? "Conduit removed. Your encrypted user profile and diagnostic history were kept." : "Conduit is ready. Open it from the Start menu and import this device's link.\n\nFor an older installation, choose Import previous profile in the first-run screen. The old folder is left untouched.";
-                        if (action != "Uninstall") Process.Start(new ProcessStartInfo(Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe")) { UseShellExecute = true });
+                        instructions.Text = action == "Uninstall" ? "Culvert removed. Your encrypted user profile and diagnostic history were kept." : "Culvert is ready. Open it from the Start menu and import this device's link.\n\nFor an older installation, choose Import previous profile in the first-run screen. The old folder is left untouched.";
+                        if (action != "Uninstall") Process.Start(new ProcessStartInfo(Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe")) { UseShellExecute = true });
                     }
                     catch (Exception e) { MessageBox.Show(form, e.Message, "Setup"); }
                     finally { foreach (Control c in buttons.Controls) c.Enabled = true; }
@@ -65,15 +65,15 @@ internal static class SetupProgram
                 catch { /* Reporting must not hide the original install error. */ }
             }
             if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true") Console.Error.WriteLine(e);
-            else MessageBox.Show(e.Message, "Conduit Setup");
+            else MessageBox.Show(e.Message, "Culvert Setup");
             return 1;
         }
     }
     private static void EnsureStopped()
     {
-        foreach (var process in Process.GetProcessesByName("WorkTunnel"))
+        foreach (var process in Process.GetProcessesByName("Culvert"))
             using (process)
-                throw new IOException("Conduit (or an older WorkTunnel app) is running. Choose Disconnect and exit in every installation, then retry Setup.");
+                throw new IOException("Culvert (or an older Culvert app) is running. Choose Disconnect and exit in every installation, then retry Setup.");
     }
     private static void SecureInstallDirectory(string path)
     {
@@ -87,13 +87,13 @@ internal static class SetupProgram
         SecureInstallDirectory(InstallSecurity.InstallRoot);
         string stage = Path.Combine(UpdateInstaller.ProtectedRoot, "setup-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(stage);
         string bundle = Path.Combine(stage, "release.wtupdate");
-        using (var input = Assembly.GetExecutingAssembly().GetManifestResourceStream("WorkTunnel.payload") ?? throw new IOException("Setup payload is missing."))
+        using (var input = Assembly.GetExecutingAssembly().GetManifestResourceStream("Culvert.payload") ?? throw new IOException("Setup payload is missing."))
         using (var output = File.Create(bundle)) input.CopyTo(output);
         var verified = ReleaseSignature.Unpack(bundle, Path.Combine(stage, "verified"), ReleaseTrust.PublicKey);
         if (verified.Release.Flavor != UpdateInstaller.Flavor) throw new InvalidDataException("Wrong package flavor.");
         if (!Version.TryParse(verified.Release.Version, out var version)) throw new InvalidDataException("Invalid package version.");
         version = new Version(version.Major, version.Minor, Math.Max(0, version.Build), Math.Max(0, version.Revision));
-        string existing = Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe");
+        string existing = Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe");
         if (File.Exists(existing) && Version.TryParse(FileVersionInfo.GetVersionInfo(existing).FileVersion, out var installed) && version < installed)
             throw new InvalidDataException("This installer is older than the installed app. Download the latest Setup to repair it; use the app's verified rollback to restore an earlier version.");
         string extracted = Path.Combine(stage, "files"); Directory.CreateDirectory(extracted);
@@ -112,24 +112,24 @@ internal static class SetupProgram
         var files = Directory.GetFiles(extracted, "*", SearchOption.AllDirectories).Select(p => Path.GetRelativePath(extracted, p)).ToArray();
         var manifest = JsonSerializer.Deserialize<ReleaseManifest>(File.ReadAllText(Path.Combine(extracted, "release-manifest.json")));
         if (manifest?.Version != verified.Release.Version || manifest.Flavor != verified.Release.Flavor) throw new InvalidDataException("Payload metadata mismatch.");
-        if (!files.Contains("WorkTunnel.exe") || !files.Contains("cores\\xray\\xray.exe") || !files.Contains("cores\\sing_box\\sing-box.exe")) throw new InvalidDataException("Incomplete package.");
+        if (!files.Contains("Culvert.exe") || !files.Contains("cores\\xray\\xray.exe") || !files.Contains("cores\\sing_box\\sing-box.exe")) throw new InvalidDataException("Incomplete package.");
         var plan = new UpdatePlan(extracted, InstallSecurity.InstallRoot, verified.Release.Version, files, files.ToDictionary(f => f, f => UpdateInstaller.Hash(Path.Combine(extracted, f))), 0, 0, false,
-            Remove: ["WorkTunnel.pdb", "WorkTunnel.Setup.pdb"]);
+            Remove: ["Culvert.pdb", "Culvert.Setup.pdb"]);
         UpdateInstaller.ValidateCoresAsync(plan).GetAwaiter().GetResult();
         UpdateInstaller.ApplyFiles(plan, UpdateInstaller.ProtectedRoot);
         // Retire the former elevated-login shortcut; startup is now explicitly opt-in in the dashboard.
-        using (var task = Process.Start(new ProcessStartInfo("schtasks.exe") { Arguments = "/Delete /TN WorkTunnel-AutoStart /F", UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
+        using (var task = Process.Start(new ProcessStartInfo("schtasks.exe") { Arguments = "/Delete /TN Culvert-AutoStart /F", UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
             task?.WaitForExit(5000);
         // Keep a repair/uninstall entrypoint; it is not the running setup image.
-        string repairExe = Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.Setup.exe");
+        string repairExe = Path.Combine(InstallSecurity.InstallRoot, "Culvert.Setup.exe");
         if (!repairExe.Equals(Environment.ProcessPath, StringComparison.OrdinalIgnoreCase)) File.Copy(Environment.ProcessPath!, repairExe, true);
-        using (var uninstall = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\WorkTunnel-" + UpdateInstaller.Flavor))
+        using (var uninstall = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Culvert-" + UpdateInstaller.Flavor))
         {
-            uninstall.SetValue("DisplayName", "Conduit"); uninstall.SetValue("DisplayVersion", verified.Release.Version);
-            uninstall.SetValue("DisplayIcon", Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe") + ",0");
+            uninstall.SetValue("DisplayName", "Culvert"); uninstall.SetValue("DisplayVersion", verified.Release.Version);
+            uninstall.SetValue("DisplayIcon", Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe") + ",0");
             uninstall.SetValue("Publisher", "Zykoraa"); uninstall.SetValue("InstallLocation", InstallSecurity.InstallRoot);
             // Open the setup UI so the user can choose repair or uninstall and approve elevation.
-            uninstall.SetValue("UninstallString", "\"" + Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.Setup.exe") + "\"");
+            uninstall.SetValue("UninstallString", "\"" + Path.Combine(InstallSecurity.InstallRoot, "Culvert.Setup.exe") + "\"");
         }
         UpdateShortcut(remove: false);
     }
@@ -137,7 +137,7 @@ internal static class SetupProgram
     {
         EnsureStopped(); NetworkLock.Remove();
         string root = Path.GetFullPath(InstallSecurity.InstallRoot);
-        if (!root.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\WorkTunnel-", StringComparison.OrdinalIgnoreCase)) throw new IOException("Unexpected install directory.");
+        if (!root.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\Culvert-", StringComparison.OrdinalIgnoreCase)) throw new IOException("Unexpected install directory.");
         if (Directory.Exists(root))
         {
             IEnumerable<string> OwnedFiles(string folder)
@@ -152,7 +152,7 @@ internal static class SetupProgram
             }
             var files = OwnedFiles(root).ToArray();
             foreach (string path in files)
-                if (Path.GetFileName(path).Equals("WorkTunnel.Setup.exe", StringComparison.OrdinalIgnoreCase))
+                if (Path.GetFileName(path).Equals("Culvert.Setup.exe", StringComparison.OrdinalIgnoreCase))
                 {
                     string retired = Path.Combine(UpdateInstaller.ProtectedRoot, "retired-setup-" + Guid.NewGuid().ToString("N") + ".exe");
                     File.Move(path, retired);
@@ -162,14 +162,14 @@ internal static class SetupProgram
             foreach (string directory in Directory.GetDirectories(root, "*", SearchOption.AllDirectories).OrderByDescending(d => d.Length)) Directory.Delete(directory);
             Directory.Delete(root);
         }
-        Registry.LocalMachine.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\WorkTunnel-" + UpdateInstaller.Flavor, false);
+        Registry.LocalMachine.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Culvert-" + UpdateInstaller.Flavor, false);
         UpdateShortcut(remove: true);
     }
 
     private static void UpdateShortcut(bool remove)
     {
         string programs = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
-        string ownExe = Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe");
+        string ownExe = Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe");
         Type shellType = Type.GetTypeFromProgID("WScript.Shell")!; dynamic shell = Activator.CreateInstance(shellType)!;
         try
         {
@@ -181,18 +181,18 @@ internal static class SetupProgram
                 finally { System.Runtime.InteropServices.Marshal.FinalReleaseComObject(link); }
             }
             // Remove only our earlier branded shortcuts, never an unrelated shortcut.
-            foreach (string prefix in new[] { "Conduit ", "WorkTunnel " })
+            foreach (string prefix in new[] { "Culvert ", "Culvert " })
             {
                 string old = Path.Combine(programs, prefix + UpdateInstaller.Flavor + ".lnk");
                 if (PointsTo(old, ownExe)) File.Delete(old);
             }
-            string menu = Path.Combine(programs, "Conduit.lnk");
+            string menu = Path.Combine(programs, "Culvert.lnk");
             string target = ownExe;
             if (remove)
             {
                 if (!PointsTo(menu, ownExe)) return;
                 string other = UpdateInstaller.Flavor == "Owner" ? "Client" : "Owner";
-                target = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "WorkTunnel-" + other, "WorkTunnel.exe");
+                target = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Culvert-" + other, "Culvert.exe");
                 if (!File.Exists(target)) { File.Delete(menu); return; }
             }
             dynamic shortcut = shell.CreateShortcut(menu);

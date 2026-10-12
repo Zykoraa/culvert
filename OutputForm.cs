@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>A simple read-only, monospaced window for command output.</summary>
 internal sealed class OutputForm : Form

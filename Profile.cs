@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>
 /// Per-Windows-user identity and active cover. Installers contain no identity;

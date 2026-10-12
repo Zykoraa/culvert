@@ -5,9 +5,9 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace WorkTunnel;
+namespace Culvert;
 
-/// <summary>Conduit's own probes use tunnel DNS and never fall back to the Windows resolver.</summary>
+/// <summary>Culvert's own probes use tunnel DNS and never fall back to the Windows resolver.</summary>
 internal static class TunnelDns
 {
     internal static byte[] Query(string host)
@@ -34,7 +34,7 @@ internal static class TunnelDns
         else
         {
             using var socket = new UdpClient(new IPEndPoint(TunnelHealthChecker.TunAddress, 0));
-            socket.Connect(new IPEndPoint(IPAddress.Parse("172.19.0.2"), 53));
+            socket.Connect(new IPEndPoint(IPAddress.Parse("172.20.0.2"), 53));
             await socket.SendAsync(query, deadline.Token);
             reply = (await socket.ReceiveAsync(deadline.Token)).Buffer;
         }

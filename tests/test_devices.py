@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import uuid
 
-spec = importlib.util.spec_from_file_location('devices', Path(__file__).resolve().parents[1] / 'server' / 'worktunnel-devices.py')
+spec = importlib.util.spec_from_file_location('devices', Path(__file__).resolve().parents[1] / 'server' / 'culvert-devices.py')
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 

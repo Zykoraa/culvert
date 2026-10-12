@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class SettingsSnapshot
 {
@@ -10,7 +10,7 @@ internal static class SettingsSnapshot
         var p = Profile.Load();
         var result = new Dictionary<string, string>
         {
-            ["Application"] = "Conduit " + typeof(SettingsSnapshot).Assembly.GetName().Version?.ToString(3),
+            ["Application"] = "Culvert " + typeof(SettingsSnapshot).Assembly.GetName().Version?.ToString(3),
             ["Configuration"] = runtime ? "Generated runtime files" : "Saved profile and templates",
             ["Server"] = includeEndpoint ? $"{p.Server}:{p.Port}" : "[redacted]",
             ["Cover / SNI"] = includeEndpoint ? p.Sni : "[redacted]",

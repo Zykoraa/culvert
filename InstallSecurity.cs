@@ -3,12 +3,12 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Security.AccessControl;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class InstallSecurity
 {
     public static bool IsAdministrator => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-    public static string InstallRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "WorkTunnel-" + UpdateInstaller.Flavor);
+    public static string InstallRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Culvert-" + UpdateInstaller.Flavor);
     public static void ProtectMachineDirectory(string path)
     {
         for (var d = new DirectoryInfo(path); d != null; d = d.Parent)
@@ -30,7 +30,7 @@ internal static class InstallSecurity
     public static void RequireInstalled()
     {
         if (!Path.GetFullPath(AppPaths.BaseDir).TrimEnd('\\').Equals(InstallRoot, StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Install this version with Conduit Setup first. The privileged host only runs from its protected installation folder.");
+            throw new InvalidOperationException("Install this version with Culvert Setup first. The privileged host only runs from its protected installation folder.");
         for (var d = new DirectoryInfo(InstallRoot); d != null; d = d.Parent)
             if ((d.Attributes & FileAttributes.ReparsePoint) != 0) throw new IOException("Installation path cannot contain links.");
     }

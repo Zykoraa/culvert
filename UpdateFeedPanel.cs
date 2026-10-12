@@ -1,6 +1,6 @@
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class UpdateFeedPanel : UserControl
 {

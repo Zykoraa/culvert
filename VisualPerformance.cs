@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal enum VisualLoad { Balanced, LowPower }
 

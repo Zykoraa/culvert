@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record ConnectionOptions(bool AutoReconnect = true, bool NetworkLock = false);
 

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Security.Principal;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record IncidentStatus(DateTimeOffset At, string Session, string State, bool ConnectionRequested,
     bool NetworkLockSelected, TunnelHealth? Health, string Message);
@@ -103,7 +103,7 @@ internal sealed class IncidentRecorder
         AtomicWrite(Path.Combine(folder, "network.json"), DiagnosticRedactor.ScrubJson(_network(), secrets));
         using var data = JsonDocument.Parse(status);
         string explanation = data.RootElement.GetProperty("Message").GetString() ?? "Connection requires attention.";
-        AtomicWrite(Path.Combine(folder, "summary.txt"), $"Conduit incident · {now:O}\n\nObserved: {explanation}\n\n" +
+        AtomicWrite(Path.Combine(folder, "summary.txt"), $"Culvert incident · {now:O}\n\nObserved: {explanation}\n\n" +
             "Compare status.json with last-healthy.json (when available). Each snapshot has its own time and host session. Network facts are sampled during report collection.\n" +
             "The report records evidence; it does not establish a root cause. NetworkLockSelected records the preference, not proof of active filtering.\n" +
             "Repeated failures are grouped for five minutes. Up to 20 reports are retained. No files are uploaded. Credentials, raw configs, interface names, SSIDs and browsing history are excluded. Review before sharing.\n");

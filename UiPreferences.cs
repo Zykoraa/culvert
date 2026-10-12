@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class UiPreferences
 {

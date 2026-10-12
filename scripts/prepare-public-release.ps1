@@ -2,7 +2,7 @@
 param([string]$Version = '', [string]$Destination = '')
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path $PSScriptRoot -Parent
-if (!$Version) { $Version = ([xml](Get-Content -LiteralPath (Join-Path $repository 'WorkTunnel.csproj') -Raw)).Project.PropertyGroup.Version | Where-Object { $_ } }
+if (!$Version) { $Version = ([xml](Get-Content -LiteralPath (Join-Path $repository 'Culvert.csproj') -Raw)).Project.PropertyGroup.Version | Where-Object { $_ } }
 if ($Version -notmatch '^\d{1,5}\.\d{1,5}\.\d{1,5}$') { throw 'Invalid release version' }
 if (!$Destination) { $Destination = Join-Path $repository "artifacts\private\public-release\$Version" }
 $releaseRoot = [IO.Path]::GetFullPath($Destination)
@@ -16,27 +16,27 @@ $hashes = @{}
 try {
     [int]$read = 0; $signer.ImportSubjectPublicKeyInfo($publicKey, [ref]$read)
     foreach ($flavor in @('Owner','Client')) {
-        $feedPath = Join-Path $repository "dist\Conduit-$flavor-stable.json"
+        $feedPath = Join-Path $repository "dist\Culvert-$flavor-stable.json"
         $feed = Get-Content -LiteralPath $feedPath -Raw | ConvertFrom-Json
         $signed = [Convert]::FromBase64String($feed.Manifest)
         if (-not $signer.VerifyData($signed, [Convert]::FromBase64String($feed.Signature), [Security.Cryptography.HashAlgorithmName]::SHA256, [Security.Cryptography.DSASignatureFormat]::IeeeP1363FixedFieldConcatenation)) { throw 'Invalid public-feed signature' }
         $metadata = [Text.Encoding]::UTF8.GetString($signed) | ConvertFrom-Json
-        $asset = "Conduit-$flavor-$Version.wtupdate"
+        $asset = "Culvert-$flavor-$Version.wtupdate"
         if ($metadata.Version -ne $Version -or $metadata.Flavor -ne $flavor -or $metadata.Asset -ne $asset -or [DateTimeOffset]::Parse($metadata.ExpiresAt) -le [DateTimeOffset]::UtcNow) { throw 'Unexpected or expired signed feed' }
         $bundle = Join-Path $repository "dist\$asset"
         if ((Get-Item -LiteralPath $bundle).Length -ne $metadata.BundleBytes -or (Get-FileHash -LiteralPath $bundle -Algorithm SHA256).Hash -ne $metadata.BundleSha256) { throw 'Published bundle does not match signed metadata' }
-        $sourceSetup = Join-Path $repository "dist\Conduit-$flavor-Setup.exe"
-        $setupName = "Conduit-$flavor-$Version-Setup.exe"
+        $sourceSetup = Join-Path $repository "dist\Culvert-$flavor-Setup.exe"
+        $setupName = "Culvert-$flavor-$Version-Setup.exe"
         $hashes[$flavor] = (Get-FileHash -LiteralPath $sourceSetup -Algorithm SHA256).Hash
         # Explicit allowlist: no configs, signing keys, source tree or private test artifacts.
         Copy-Item -LiteralPath $sourceSetup -Destination (Join-Path $assets $setupName) -Force
         Copy-Item -LiteralPath $bundle -Destination (Join-Path $assets $asset) -Force
-        Copy-Item -LiteralPath $feedPath -Destination (Join-Path $assets "Conduit-$flavor-stable.json") -Force
+        Copy-Item -LiteralPath $feedPath -Destination (Join-Path $assets "Culvert-$flavor-stable.json") -Force
         if ((Get-FileHash -LiteralPath (Join-Path $assets $asset) -Algorithm SHA256).Hash -ne $metadata.BundleSha256 -or
             (Get-FileHash -LiteralPath (Join-Path $assets $setupName) -Algorithm SHA256).Hash -ne $hashes[$flavor]) { throw 'Release bytes changed during staging' }
     }
 } finally { $signer.Dispose() }
-$allowed = @("Conduit-Owner-$Version-Setup.exe","Conduit-Client-$Version-Setup.exe","Conduit-Owner-$Version.wtupdate","Conduit-Client-$Version.wtupdate",'Conduit-Owner-stable.json','Conduit-Client-stable.json','SHA256SUMS.txt')
+$allowed = @("Culvert-Owner-$Version-Setup.exe","Culvert-Client-$Version-Setup.exe","Culvert-Owner-$Version.wtupdate","Culvert-Client-$Version.wtupdate",'Culvert-Owner-stable.json','Culvert-Client-stable.json','SHA256SUMS.txt')
 foreach ($file in Get-ChildItem -LiteralPath $assets -File) { if ($file.Name -notin $allowed) { throw "Unexpected publication file: $($file.Name)" } }
 $lines = foreach ($file in Get-ChildItem -LiteralPath $assets -File | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object Name) { "$( (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() )  $($file.Name)" }
 $lines | Set-Content -LiteralPath (Join-Path $assets 'SHA256SUMS.txt') -Encoding utf8NoBOM

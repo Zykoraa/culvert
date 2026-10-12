@@ -1,14 +1,14 @@
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class BrandIcon
 {
     public static Icon Load()
     {
-        using var stream = typeof(BrandIcon).Assembly.GetManifestResourceStream("Conduit.ico")
-            ?? throw new InvalidOperationException("The Conduit icon is missing from this build.");
+        using var stream = typeof(BrandIcon).Assembly.GetManifestResourceStream("Culvert.ico")
+            ?? throw new InvalidOperationException("The Culvert icon is missing from this build.");
         using var icon = new Icon(stream, 32, 32);
         return (Icon)icon.Clone();
     }

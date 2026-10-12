@@ -1,7 +1,7 @@
 #if OWNER_BUILD
 using QRCoder;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed class DeviceForm : Form
 {
@@ -20,7 +20,7 @@ internal sealed class DeviceForm : Form
     {
         _manager = new(controller);
         DashboardTheme.StyleCaption(this);
-        Text = "Your devices · Conduit"; Size = new(850, 680); MinimumSize = new(760, 620);
+        Text = "Your devices · Culvert"; Size = new(850, 680); MinimumSize = new(760, 620);
         StartPosition = FormStartPosition.CenterParent; Font = new("Segoe UI", 10);
         BackColor = DashboardTheme.Background; ForeColor = DashboardTheme.Text;
         _devices.BackColor = DashboardTheme.Surface; _devices.ForeColor = DashboardTheme.Text; _devices.BorderStyle = BorderStyle.FixedSingle;
@@ -70,7 +70,7 @@ internal sealed class DeviceForm : Form
     {
         var button = new DashboardButton { Text = text, AutoSize = true, Height = 32, FlatStyle = FlatStyle.Flat,
             BackColor = DashboardTheme.BlueTint, ForeColor = DashboardTheme.Text, Cursor = Cursors.Hand };
-        button.Click += async (_, _) => { try { await click(); } catch (Exception error) { MessageBox.Show(error.Message, "Conduit"); } };
+        button.Click += async (_, _) => { try { await click(); } catch (Exception error) { MessageBox.Show(error.Message, "Culvert"); } };
         return button;
     }
     private void Progress(string message) { if (!IsDisposed) _status.Text = message; }
@@ -90,7 +90,7 @@ internal sealed class DeviceForm : Form
         _devices.DataSource = _data.Devices;
         _devices.SelectedIndex = -1;
         if (selected != null) _devices.SelectedItem = _data.Devices.FirstOrDefault(d => d.Id == selected);
-        Progress("Import the selected link in Conduit or a compatible VLESS/REALITY mobile app. Keep it private.");
+        Progress("Import the selected link in Culvert or a compatible VLESS/REALITY mobile app. Keep it private.");
     }
     private void ShowSelected()
     {

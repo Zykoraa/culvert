@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record SignedRelease(string Version, string Flavor, string PackageSha256, string KeyId);
 internal static class ReleaseSignature

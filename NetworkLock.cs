@@ -7,7 +7,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.NetworkManagement.WindowsFilteringPlatform;
 using Windows.Win32.NetworkManagement.Ndis;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record NetworkLockObservation(bool PolicyPresent, bool BlockingVerified, bool Known, string Detail)
 {
@@ -17,8 +17,8 @@ internal sealed record NetworkLockObservation(bool PolicyPresent, bool BlockingV
 /// <summary>Dedicated persistent WFP sublayer. Never changes Windows Firewall profiles or other providers.</summary>
 internal static unsafe class NetworkLock
 {
-    private static readonly Guid Sublayer = new("d6bd188e-9957-4a4a-99c8-811c1310bc35");
-    private static Guid Key(int number) => new($"95a2e590-31dd-440a-91a3-{number:000000000000}");
+    private static readonly Guid Sublayer = new("74eaa4a9-a318-4923-8c0c-8dce69ca38ce");
+    private static Guid Key(int number) => new($"d83ac08b-54af-4fa3-8cc6-{number:000000000000}");
     private const int FilterCount = 9;
     private static void Check(uint result) { if (result != 0) throw new Win32Exception(unchecked((int)result), "Network lock operation failed (0x" + result.ToString("X8") + ")."); }
     private static FWPM_ENGINE_HANDLE Open()
@@ -27,7 +27,7 @@ internal static unsafe class NetworkLock
     }
     public static ulong TunnelLuid()
     {
-        var nic = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(n => n.Name == "worktunnel" && n.OperationalStatus == OperationalStatus.Up);
+        var nic = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(n => n.Name == "culvert" && n.OperationalStatus == OperationalStatus.Up);
         if (nic == null) return 0;
         NET_LUID_LH luid;
         Check((uint)PInvoke.ConvertInterfaceIndexToLuid((uint)nic.GetIPProperties().GetIPv4Properties().Index, &luid)); return luid.Value;
@@ -54,15 +54,15 @@ internal static unsafe class NetworkLock
                     FWPM_SUBLAYER0* layer = null;
                     Guid key = Sublayer;
                     uint result = PInvoke.FwpmSubLayerGetByKey0(engine, &key, &layer);
-                    if (result == 0x80320007) return new(false, false, true, "No Conduit network lock is installed.");
+                    if (result == 0x80320007) return new(false, false, true, "No Culvert network lock is installed.");
                     Check(result);
                     try
                     {
                         bool persistent = (layer->flags & PInvoke.FWPM_SUBLAYER_FLAG_PERSISTENT) != 0;
                         bool blocks = persistent && ReadBlock(engine, 1, PInvoke.FWPM_LAYER_OUTBOUND_TRANSPORT_V4) &&
                             ReadBlock(engine, 4, PInvoke.FWPM_LAYER_OUTBOUND_TRANSPORT_V6);
-                        return new(true, blocks, true, blocks ? "Conduit's persistent IPv4 and IPv6 blocking rules are present. Configured tunnel, server, loopback and DHCP exceptions still apply."
-                            : "Conduit policy exists, but its required IPv4 / IPv6 blocking rules are incomplete. Protection is unverified.");
+                        return new(true, blocks, true, blocks ? "Culvert's persistent IPv4 and IPv6 blocking rules are present. Configured tunnel, server, loopback and DHCP exceptions still apply."
+                            : "Culvert policy exists, but its required IPv4 / IPv6 blocking rules are incomplete. Protection is unverified.");
                     }
                     finally { if (layer != null) { void* memory = layer; PInvoke.FwpmFreeMemory0(&memory); } }
                 }
@@ -101,7 +101,7 @@ internal static unsafe class NetworkLock
             try
             {
                 RemoveFilters(handle);
-                fixed (char* name = "Conduit network lock")
+                fixed (char* name = "Culvert network lock")
                 {
                     var sublayer = new FWPM_SUBLAYER0 { subLayerKey = Sublayer, displayData = new() { name = new PWSTR(name) }, flags = PInvoke.FWPM_SUBLAYER_FLAG_PERSISTENT, weight = 0x7fff };
                     uint add = PInvoke.FwpmSubLayerAdd0(handle, &sublayer, default);
@@ -130,7 +130,7 @@ internal static unsafe class NetworkLock
                 }
                     if (allowServerUdp)
                     {
-                        fixed (char* udpName = "Conduit server UDP")
+                        fixed (char* udpName = "Culvert server UDP")
                             Add(handle, Key(9), PInvoke.FWPM_LAYER_OUTBOUND_TRANSPORT_V4, 90, true,
                                 [Condition(PInvoke.FWPM_CONDITION_IP_REMOTE_ADDRESS, FWP_DATA_TYPE.FWP_UINT32, address),
                                  Condition(PInvoke.FWPM_CONDITION_IP_REMOTE_PORT, FWP_DATA_TYPE.FWP_UINT16, (uint)port),

@@ -1,7 +1,7 @@
-# Conduit downloads
+# Culvert downloads
 
-This repository publishes Conduit release downloads and signed update feeds at
-https://zykoraa.github.io/conduit/.
+This repository publishes Culvert release downloads and signed update feeds at
+https://zykoraa.github.io/culvert/.
 
 The application source, production signing key, device profiles and private
 diagnostics are kept outside this distribution repository. The Windows app

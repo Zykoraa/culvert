@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using Windows.Win32;
 using Windows.Win32.NetworkManagement.WindowsFilteringPlatform;
-using WorkTunnel;
+using Culvert;
 
 internal static class PrivacyChecks
 {
@@ -47,11 +47,11 @@ internal static class PrivacyChecks
         check(!BrokerFacts.Verified(snapshot, now.AddMinutes(2)) && !BrokerFacts.Verified(snapshot with { Verified = false }, now), "Dashboard rejects stale or explicitly invalidated host verification");
         check(!BrokerFacts.Recent(now, now.AddSeconds(5)), "An unanswered host cannot keep a current lock indication indefinitely");
         var outside = RouteProbe.Evaluate([7, 7], [4], false);
-        check(ConnectionDiagnosis.For(health with { Adapter = new(false, "down"), Routes = new(outside, good, good) }).Happening.Contains("outside Conduit"),
+        check(ConnectionDiagnosis.For(health with { Adapter = new(false, "down"), Routes = new(outside, good, good) }).Happening.Contains("outside Culvert"),
             "A known bypass route outranks an unavailable adapter in the diagnosis");
         await Lifecycle(check, health);
         CheckBlocks(check);
-        string root = Path.Combine(Path.GetTempPath(), "Conduit-visual-check-" + Guid.NewGuid().ToString("N"));
+        string root = Path.Combine(Path.GetTempPath(), "Culvert-visual-check-" + Guid.NewGuid().ToString("N"));
         try
         {
             string path = Path.Combine(root, "visual.json");
@@ -93,8 +93,8 @@ internal static class PrivacyChecks
     private static unsafe void CheckBlocks(Action<bool, string> check)
     {
         ulong weight = 10;
-        Guid key = new("95a2e590-31dd-440a-91a3-000000000001");
-        var filter = new FWPM_FILTER0 { filterKey = key, subLayerKey = new("d6bd188e-9957-4a4a-99c8-811c1310bc35"),
+        Guid key = new("d83ac08b-54af-4fa3-8cc6-000000000001");
+        var filter = new FWPM_FILTER0 { filterKey = key, subLayerKey = new("74eaa4a9-a318-4923-8c0c-8dce69ca38ce"),
             layerKey = PInvoke.FWPM_LAYER_OUTBOUND_TRANSPORT_V4, action = new() { type = FWP_ACTION_TYPE.FWP_ACTION_BLOCK },
             flags = FWPM_FILTER_FLAGS.FWPM_FILTER_FLAG_PERSISTENT, weight = new() { type = FWP_DATA_TYPE.FWP_UINT64 } };
         filter.weight.uint64 = &weight;

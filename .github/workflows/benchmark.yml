@@ -27,9 +27,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./scripts/package-client.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $setup = Start-Process -FilePath ./dist/Conduit-Client-Setup.exe -ArgumentList --install -WindowStyle Hidden -PassThru -Wait
+          $setup = Start-Process -FilePath ./dist/Culvert-Client-Setup.exe -ArgumentList --install -WindowStyle Hidden -PassThru -Wait
           if ($setup.ExitCode -ne 0) { throw 'Fixture installation failed' }
-          dotnet build tests/WorkTunnel.Checks.csproj -c Release
+          dotnet build tests/Culvert.Checks.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet build tools/BenchmarkDriver/BenchmarkDriver.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

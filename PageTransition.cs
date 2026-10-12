@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Short-lived in-memory transition. Live controls remain the source of truth.</summary>
 internal sealed class PageTransition : Control, IAnimatedControl

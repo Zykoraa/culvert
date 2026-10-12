@@ -9,6 +9,6 @@
     <Compile Include="Preview.cs" />
     <Content Include="../../configs/*.json" Link="configs/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
-    <EmbeddedResource Include="../../assets/Conduit.ico" LogicalName="Conduit.ico" />
+    <EmbeddedResource Include="../../assets/Culvert.ico" LogicalName="Culvert.ico" />
   </ItemGroup>
 </Project>

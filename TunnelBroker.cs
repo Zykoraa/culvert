@@ -6,7 +6,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text.Json;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record BrokerRequest(string Command, Profile? Profile = null, bool? AutoHeal = null, bool? KillSwitch = null);
 internal sealed record BrokerSnapshot(TunnelState State, string Message, string? ExitIp, bool Verified, TunnelHealth? Health,
@@ -22,7 +22,7 @@ internal static class BrokerFacts
 
 internal static class BrokerWire
 {
-    public static string Name => "WorkTunnel.v2." + AppPaths.UserSid;
+    public static string Name => "Culvert.v2." + AppPaths.UserSid;
     public static async Task WriteAsync<T>(Stream stream, T value, CancellationToken ct)
     {
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(value);
@@ -48,10 +48,10 @@ internal static class TunnelBroker
     {
         InstallSecurity.RequireInstalled();
         if (!InstallSecurity.IsAdministrator) throw new UnauthorizedAccessException("The tunnel host requires elevation.");
-        using var singleton = new Mutex(true, "Global\\WorkTunnel.Host.v2", out bool created);
+        using var singleton = new Mutex(true, "Global\\Culvert.Host.v2", out bool created);
         if (!created) throw new InvalidOperationException("A tunnel host is already running. Disconnect it before starting another installation or Windows user session.");
         using var children = ProcessLifetime.OwnHostAndChildren();
-        InstallSecurity.ProtectMachineDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "WorkTunnel"));
+        InstallSecurity.ProtectMachineDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Culvert"));
         InstallSecurity.ProtectMachineDirectory(Path.GetDirectoryName(AppPaths.RuntimeDir)!);
         var sid = WindowsIdentity.GetCurrent().User!;
         SecretStore.RestrictDirectory(AppPaths.RuntimeDir, sid);
@@ -202,7 +202,7 @@ internal sealed class BrokerClient : ITunnelController
         deadline.CancelAfter(TimeSpan.FromSeconds(request.Command == "status" ? 3 : request.Command == "connections" ? 5 : 85));
         using var pipe = new NamedPipeClientStream(".", BrokerWire.Name, PipeDirection.InOut, PipeOptions.Asynchronous, TokenImpersonationLevel.Impersonation);
         await pipe.ConnectAsync(connectMs, deadline.Token);
-        if (!GetNamedPipeServerProcessId(pipe.SafePipeHandle, out uint pid) || !InstallSecurity.ProcessPath(pid).Equals(Path.Combine(InstallSecurity.InstallRoot, "WorkTunnel.exe"), StringComparison.OrdinalIgnoreCase))
+        if (!GetNamedPipeServerProcessId(pipe.SafePipeHandle, out uint pid) || !InstallSecurity.ProcessPath(pid).Equals(Path.Combine(InstallSecurity.InstallRoot, "Culvert.exe"), StringComparison.OrdinalIgnoreCase))
             throw new UnauthorizedAccessException("Unrecognized tunnel host. Nothing was sent.");
         await BrokerWire.WriteAsync(pipe, request, deadline.Token);
         var snapshot = await BrokerWire.ReadAsync<BrokerSnapshot>(pipe, deadline.Token);
@@ -226,7 +226,7 @@ internal sealed class BrokerClient : ITunnelController
         {
             try { await SendAsync(new("status"), 200); return; } catch (TimeoutException) { } catch (IOException) { }
             InstallSecurity.RequireInstalled();
-            var start = new ProcessStartInfo(Path.Combine(AppPaths.BaseDir, "WorkTunnel.exe")) { UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
+            var start = new ProcessStartInfo(Path.Combine(AppPaths.BaseDir, "Culvert.exe")) { UseShellExecute = true, Verb = "runas", WindowStyle = ProcessWindowStyle.Hidden };
             start.ArgumentList.Add("--tunnel-host"); Process.Start(start)?.Dispose();
             for (int i = 0; i < 25; i++)
             {

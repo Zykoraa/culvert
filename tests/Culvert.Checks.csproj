@@ -5,6 +5,7 @@
     <DefineConstants Condition="'$(OwnerBuild)'=='true'">$(DefineConstants);OWNER_BUILD</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\OwnerSshPreferences.cs" Link="OwnerSshPreferences.cs" />
     <Compile Include="..\TrayNotificationPolicy.cs" Link="TrayNotificationPolicy.cs" />
     <Compile Include="..\ConnectionPreferences.cs" Link="ConnectionPreferences.cs" />
     <Compile Include="..\RecoveryPolicy.cs" Link="RecoveryPolicy.cs" />

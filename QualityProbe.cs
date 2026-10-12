@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record QualityResult(DateTimeOffset At, int Sent, int Replied, double? MedianMs, double? VariationMs, double? P95Ms, double[] Samples, string Note)
 {

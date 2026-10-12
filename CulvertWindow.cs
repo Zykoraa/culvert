@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
-using static WorkTunnel.DashboardTheme;
+using static Culvert.DashboardTheme;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Client-painted chrome with native resize, drag, system menu and Snap hit targets.</summary>
-internal class ConduitWindow : Form
+internal class CulvertWindow : Form
 {
     private readonly CaptionStrip _caption;
     private int _pressed;
@@ -21,7 +21,7 @@ internal class ConduitWindow : Form
     [DllImport("user32.dll")] private static extern bool TrackMouseEvent(ref MouseTracking tracking);
     [DllImport("user32.dll")] private static extern IntPtr SendMessageW(IntPtr window, uint message, IntPtr wParam, IntPtr lParam);
 
-    public ConduitWindow()
+    public CulvertWindow()
     {
         SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw, true);
         _caption = new CaptionStrip(this); Controls.Add(_caption);
@@ -123,10 +123,10 @@ internal class ConduitWindow : Form
 
     private sealed class CaptionStrip : Control
     {
-        private readonly ConduitWindow _owner;
+        private readonly CulvertWindow _owner;
         private readonly CaptionButton _minimize, _maximize, _close;
         public Rectangle MaximizeBounds => _maximize.Bounds with { X = _maximize.Left + Left, Y = _maximize.Top + Top };
-        public CaptionStrip(ConduitWindow owner)
+        public CaptionStrip(CulvertWindow owner)
         {
             _owner = owner; BackColor = Background; TabStop = false;
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
@@ -165,10 +165,10 @@ internal class ConduitWindow : Form
     }
     private sealed class CaptionButton : Button
     {
-        private readonly ConduitWindow _owner;
+        private readonly CulvertWindow _owner;
         private readonly int _hit;
         private bool _hover;
-        public CaptionButton(ConduitWindow owner, int hit, string name)
+        public CaptionButton(CulvertWindow owner, int hit, string name)
         {
             _owner = owner; _hit = hit; AccessibleName = name; AccessibleRole = AccessibleRole.PushButton; TabStop = true; FlatStyle = FlatStyle.Flat; FlatAppearance.BorderSize = 0;
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);

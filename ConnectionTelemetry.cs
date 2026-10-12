@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record LiveDestination(string Address, string Name, string Network, long Uploaded, long Downloaded, bool Active);
 internal sealed record ConnectionSnapshot(string ServerAddress, LiveDestination[] Destinations, DateTimeOffset At, string? Problem = null)

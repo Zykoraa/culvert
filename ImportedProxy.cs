@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Bounded connection fields, never executable paths or arbitrary engine JSON.</summary>
 internal sealed class ImportedProxy
@@ -106,7 +106,7 @@ internal static class V2rayImport
     private static JsonObject Single(JsonNode? node, string what)
     {
         if (node is not JsonArray { Count: 1 } values || values[0] is not JsonObject result)
-            throw new InvalidDataException($"Choose one active server in v2rayN. Conduit imports one {what} at a time.");
+            throw new InvalidDataException($"Choose one active server in v2rayN. Culvert imports one {what} at a time.");
         return result;
     }
     public static Profile Parse(string json)

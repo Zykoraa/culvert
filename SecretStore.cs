@@ -3,7 +3,7 @@ using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Principal;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal static class SecretStore
 {
@@ -22,7 +22,7 @@ internal static class SecretStore
         try
         {
             Marshal.Copy(input, 0, blob.Data, input.Length);
-            bool ok = encrypt ? CryptProtectData(ref blob, "WorkTunnel current-user secret", IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 1, out output)
+            bool ok = encrypt ? CryptProtectData(ref blob, "Culvert current-user secret", IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 1, out output)
                 : CryptUnprotectData(ref blob, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 1, out output);
             if (!ok) throw new CryptographicException("Windows could not protect/unlock this user's saved data.");
             byte[] result = new byte[output.Length]; Marshal.Copy(output.Data, result, 0, result.Length); return result;

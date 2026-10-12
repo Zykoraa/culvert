@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 /// <summary>Runs the bundled tether-diag.ps1 in a live console window.</summary>
 internal static class Diagnostics
@@ -9,7 +9,7 @@ internal static class Diagnostics
     {
         if (!File.Exists(AppPaths.DiagScript))
         {
-            MessageBox.Show("Diagnostic script not found in this install.", "Conduit",
+            MessageBox.Show("Diagnostic script not found in this install.", "Culvert",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
@@ -24,7 +24,7 @@ internal static class Diagnostics
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Conduit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(ex.Message, "Culvert", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

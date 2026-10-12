@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace WorkTunnel;
+namespace Culvert;
 
 internal sealed record HealthCheck(bool Ok, string Detail, long? Milliseconds = null, bool BypassDetected = false);
 internal sealed record TunnelHealth(HealthCheck Adapter, HealthCheck Internet, HealthCheck Dns,
@@ -26,7 +26,7 @@ internal static class HealthFreshness
 
 internal sealed class TunnelHealthChecker
 {
-    internal static readonly IPAddress TunAddress = IPAddress.Parse("172.19.0.1");
+    internal static readonly IPAddress TunAddress = IPAddress.Parse("172.20.0.1");
 
     public async Task<TunnelHealth> CheckAsync(string expectedExit, CancellationToken ct)
     {
