@@ -28,3 +28,7 @@ Mapping.txt
 obfuscar.xml
 
 # the pinned cores in cores/ ARE committed on purpose (reproducible build).
+
+# Python server-test caches
+__pycache__/
+*.py[cod]
