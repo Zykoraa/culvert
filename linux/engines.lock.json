@@ -1,0 +1,14 @@
+{
+  "xray": {
+    "version": "26.7.28",
+    "archive": "https://github.com/XTLS/Xray-core/releases/download/v26.7.28/Xray-linux-64.zip",
+    "sha256": "8195d909f1109b8f3d99eefe401a3c451d7bf4af71f24d3815420f77e5dd2a40",
+    "binary_sha256": "64d46afb80adea1bf97a0d467e83f4a9ac1ebd0995891e84bca3f1a1d1affb1d"
+  },
+  "sing-box": {
+    "version": "1.13.19",
+    "archive": "https://github.com/SagerNet/sing-box/releases/download/v1.13.19/sing-box-1.13.19-linux-amd64.tar.gz",
+    "sha256": "ef88a9e577d474210867bd708933d042e9b70106529df2656182c9db90106aa1",
+    "binary_sha256": "7e9dcd7239c49478a576d79f272751e5ed1c2aba7cc08ab1b2bd69c00c904ba1"
+  }
+}

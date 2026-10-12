@@ -12,6 +12,7 @@
     <Compile Include="SetupProgram.cs" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
     <EmbeddedResource Include="../assets/Culvert.ico" LogicalName="Culvert.ico" />
+    <EmbeddedResource Include="../assets/Culvert-mark.png" LogicalName="Culvert-mark.png" />
     <EmbeddedResource Include="$(PayloadFile)" LogicalName="Culvert.payload" Condition="'$(PayloadFile)'!=''" />
   </ItemGroup>
   <Import Project="../build/Obfuscation.targets" />

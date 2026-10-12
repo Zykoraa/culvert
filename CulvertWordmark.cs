@@ -5,6 +5,8 @@ namespace Culvert;
 /// <summary>Decorative branding only; it never represents tunnel health or traffic.</summary>
 internal sealed class CulvertWordmark : Control, IAnimatedControl
 {
+    private readonly System.Windows.Forms.Timer _orbit = new() { Interval = 50 };
+    private float _angle = -44;
     public CulvertWordmark()
     {
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
@@ -14,12 +16,14 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
         Text = "Culvert"; AccessibleName = "Culvert";
         AccessibleDescription = "Connected on your terms. Decorative logo.";
         AccessibleRole = AccessibleRole.StaticText; TabStop = false;
+        _orbit.Tick += (_, _) => { if (AnimationSettings.Allowed(this)) { _angle = (_angle + 1.5f) % 360; Invalidate(); } };
     }
 
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
         Microsoft.Win32.SystemEvents.UserPreferenceChanged += PreferencesChanged;
+        _orbit.Start();
     }
 
     private void PreferencesChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
@@ -35,20 +39,12 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
         base.OnPaint(e);
         if (Width < 2 || Height < 2) return;
         var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-        float size = Math.Min(Height - 4, Font.GetHeight(g) * .9f);
+        float size = Math.Min(Height - 2, Font.GetHeight(g) * 1.3f);
         if (size < 4) return;
         float top = (Height - size) / 2, left = 2;
         Color blue = SystemInformation.HighContrast ? SystemColors.WindowText : DashboardTheme.Blue;
         Color pink = SystemInformation.HighContrast ? SystemColors.WindowText : DashboardTheme.Pink;
-        // Static branding avoids continuous redraws when the dashboard is idle.
-        for (int ring = 0; ring < 3; ring++)
-        {
-            float inset = ring * size * .14f, diameter = size - inset * 2;
-            var bounds = new RectangleF(left + inset, top + inset, diameter, diameter);
-            using var gradient = new LinearGradientBrush(bounds, blue, pink, 35f);
-            using var track = new Pen(gradient, Math.Max(1.5f, size * .055f)) { StartCap = LineCap.Round, EndCap = LineCap.Round };
-            g.DrawArc(track, bounds, 42, 276);
-        }
+        BrandMark.Draw(g, new RectangleF(left, top, size, size), _angle);
 
         using var letters = new GraphicsPath();
         letters.AddString("CULVERT", Font.FontFamily, (int)Font.Style, Font.SizeInPoints * g.DpiY / 72,
@@ -67,6 +63,12 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
     protected override void OnHandleDestroyed(EventArgs e)
     {
         Microsoft.Win32.SystemEvents.UserPreferenceChanged -= PreferencesChanged;
+        _orbit.Stop();
         base.OnHandleDestroyed(e);
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) _orbit.Dispose();
+        base.Dispose(disposing);
     }
 }

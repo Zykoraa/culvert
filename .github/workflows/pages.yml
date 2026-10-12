@@ -42,6 +42,9 @@ jobs:
               gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
             done
           done
+          for asset in "Culvert-linux-x86_64-$version.tar.gz" "Culvert-linux-x86_64-$version.tar.gz.sig"; do
+            gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
+          done
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir public
           (cd public && sha256sum --check SHA256SUMS.txt)
           RELEASE_VERSION="$version" python3 - <<'PY'

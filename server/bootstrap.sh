@@ -93,5 +93,7 @@ if systemctl is-active --quiet firewalld; then
   firewall-cmd --add-port=443/tcp
 fi
 bash "$ROOT/install-watchdog.sh"
+OWNER_HOME="$(getent passwd "$OWNER" | cut -d: -f6)"
+install -o "$OWNER" -g "$(id -gn "$OWNER")" -m 755 "$ROOT/usage.sh" "$OWNER_HOME/usage.sh"
 echo 'Culvert server installed. The private owner profile is in ~/.config/culvert/profile.json.'
 echo 'The cloud network must also allow inbound TCP 443.'

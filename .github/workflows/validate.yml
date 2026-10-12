@@ -1,4 +1,4 @@
-name: Windows release checks
+name: Culvert release checks
 on:
   push:
     branches: [main]
@@ -9,6 +9,18 @@ permissions:
 env:
   RestoreLockedMode: 'true'
 jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Test Linux control boundary and server operations
+        run: |
+          python3 -m unittest discover -s tests -p 'test_*.py'
+          python3 -m compileall -q linux
+          bash -n linux/install.sh linux/install-system.sh server/bootstrap.sh
+      - name: Verify and package Linux engines
+        run: python3 linux/package.py
   windows:
     runs-on: windows-2025
     timeout-minutes: 20

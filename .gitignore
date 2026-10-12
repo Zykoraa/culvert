@@ -32,3 +32,6 @@ obfuscar.xml
 # Python server-test caches
 __pycache__/
 *.py[cod]
+
+# Linux cores are fetched from pinned upstream archives for release packaging.
+cores/linux/

@@ -36,6 +36,14 @@ else if (args.Length == 2 && args[0] == "init")
     File.WriteAllText(args[1], "namespace Culvert;\ninternal static class ReleaseTrust { public static byte[] PublicKey => System.Convert.FromBase64String(\"" + Convert.ToBase64String(publicKey) + "\"); }\n");
     Console.WriteLine("Release trust initialized; private key remains Windows-protected outside the repository.");
 }
+else if (args.Length == 3 && args[0] == "sign-file")
+{
+    if (!publicKey.SequenceEqual(ReleaseTrust.PublicKey)) throw new CryptographicException("Signing key does not match release trust.");
+    using var input = File.OpenRead(args[1]);
+    byte[] signature = key.SignData(input, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+    File.WriteAllBytes(args[2], signature);
+    Console.WriteLine("Signed " + Path.GetFileName(args[1]));
+}
 else if (args.Length == 5 && args[0] == "sign")
 {
     if (!publicKey.SequenceEqual(ReleaseTrust.PublicKey)) throw new CryptographicException("The signing key does not match the public key embedded in this source tree.");
@@ -76,4 +84,4 @@ else if (args.Length == 3 && args[0] == "feed")
     File.WriteAllBytes(args[2], document);
     Console.WriteLine("Signed update feed: " + Path.GetFileName(args[2]));
 }
-else throw new ArgumentException("Usage: init <ReleaseTrust.cs> | import <private-key.pem> | sign <package.zip> <version> <flavor> <output.wtupdate> | feed <versioned.wtupdate> <output.json>");
+else throw new ArgumentException("Usage: init <ReleaseTrust.cs> | import <private-key.pem> | sign <package.zip> <version> <flavor> <output.wtupdate> | sign-file <archive> <output.sig> | feed <versioned.wtupdate> <output.json>");

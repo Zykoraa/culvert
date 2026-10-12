@@ -21,5 +21,5 @@ tag's exact version format before fetching files.
 
 Feeds expire thirty days after signing. The publisher must renew signed feed
 metadata before expiry using the original protected key and redeploy the release.
-The key never runs in GitHub Actions. A failed or expired feed cannot authorize an
+Production releases import the independent key from an encrypted GitHub Actions secret into the temporary runner’s Windows-protected store, then remove runner signing material. A failed or expired feed cannot authorize an
 update. Retired versions remain available in GitHub release history.

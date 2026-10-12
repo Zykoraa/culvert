@@ -35,6 +35,7 @@
     <Compile Remove="tools\**\*.cs" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
     <EmbeddedResource Include="assets/Culvert.ico" LogicalName="Culvert.ico" />
+    <EmbeddedResource Include="assets/Culvert-mark.png" LogicalName="Culvert-mark.png" />
     <Content Include="configs\**\*" Exclude="configs\profile.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="licenses\**\*" Exclude="licenses\Natural-Earth.txt" CopyToOutputDirectory="PreserveNewest" />
@@ -45,7 +46,7 @@
        .exe/.dll out of the Content set, so copy them explicitly after build/publish. -->
   <Target Name="CopyCoresBuild" AfterTargets="Build">
     <ItemGroup>
-      <CoreFilesB Include="$(MSBuildProjectDirectory)\cores\**\*" />
+      <CoreFilesB Include="$(MSBuildProjectDirectory)\cores\**\*" Exclude="$(MSBuildProjectDirectory)\cores\linux\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(CoreFilesB)"
           DestinationFiles="@(CoreFilesB->'$(OutDir)cores\%(RecursiveDir)%(Filename)%(Extension)')"
@@ -57,7 +58,7 @@
       <_PubDir>$([MSBuild]::EnsureTrailingSlash('$(PublishDir)'))</_PubDir>
     </PropertyGroup>
     <ItemGroup>
-      <CoreFilesP Include="$(MSBuildProjectDirectory)\cores\**\*" />
+      <CoreFilesP Include="$(MSBuildProjectDirectory)\cores\**\*" Exclude="$(MSBuildProjectDirectory)\cores\linux\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(CoreFilesP)"
           DestinationFiles="@(CoreFilesP->'$(_PubDir)cores\%(RecursiveDir)%(Filename)%(Extension)')"

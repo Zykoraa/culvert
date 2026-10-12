@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="shell" x1="70" y1="48" x2="192" y2="210" gradientUnits="userSpaceOnUse"><stop stop-color="#fff1ed"/><stop offset=".48" stop-color="#dbc0c9"/><stop offset="1" stop-color="#967480"/></linearGradient>
+    <linearGradient id="rim" x1="72" y1="84" x2="187" y2="179" gradientUnits="userSpaceOnUse"><stop stop-color="#ff6a7e"/><stop offset="1" stop-color="#d31d42"/></linearGradient>
+    <linearGradient id="eye" x1="83" y1="127" x2="178" y2="155" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb0b7"/><stop offset=".5" stop-color="#ff4b67"/><stop offset="1" stop-color="#f3264c"/></linearGradient>
+  </defs>
+  <!-- The vaulted shell and two cutouts evoke a culvert opening, not a letterform. -->
+  <path d="M64 113c0-42 27-72 64-72s64 30 64 72v61c0 12-7 22-18 27l-34 16a28 28 0 0 1-24 0l-34-16c-11-5-18-15-18-27v-61Z" fill="url(#shell)"/>
+  <path d="M128 53c32 0 52 26 52 62v59c0 7-4 12-11 16l-33 16a18 18 0 0 1-16 0l-33-16c-7-4-11-9-11-16v-59c0-36 20-62 52-62Z" fill="#170e14"/>
+  <path d="M87 107c3-26 17-43 41-43s38 17 41 43" stroke="url(#rim)" stroke-width="7" stroke-linecap="round"/>
+  <!-- Small asymmetric antennae add character without compromising the silhouette. -->
+  <path d="m79 73-14-19m106 19 14-19" stroke="#e8ccd3" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="64" cy="52" r="7" fill="#ff4b67"/><circle cx="186" cy="52" r="7" fill="#ff4b67"/>
+  <path d="m84 125 34 10-8 17c-15-1-24-10-26-27Zm88 0-34 10 8 17c15-1 24-10 26-27Z" fill="url(#eye)"/>
+  <path d="m90 127 16 5" stroke="#ffdae0" stroke-width="3" stroke-linecap="round"/>
+  <path d="m112 172 16 7 16-7" stroke="#e8ccd3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M128 83v20" stroke="#7b4658" stroke-width="4" stroke-linecap="round"/>
+  <path d="m55 124-9 7v21l9 7m146-35 9 7v21l-9 7" stroke="#ff4b67" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

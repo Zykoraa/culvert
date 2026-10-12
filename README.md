@@ -4,7 +4,7 @@
 
 Culvert is an independent copy of [Conduit](https://github.com/Zykoraa/conduit), with a black/crimson theme and its own VM, settings, installer and update trust. Both can remain installed; run one full-device tunnel at a time.
 
-A Windows x64 client for personal VLESS/REALITY tunnels and supported servers imported from v2rayN. Culvert pairs Xray with sing-box, shows current connection evidence, and offers an optional whole-PC network lock.
+A Windows x64 and native Linux / Wayland client for personal VLESS/REALITY tunnels. Windows also supports servers imported from v2rayN. Culvert pairs Xray with sing-box, shows current connection evidence, and offers an optional whole-PC network lock.
 
 [Download Culvert](https://zykoraa.github.io/culvert/) · [Releases](https://github.com/Zykoraa/culvert/releases) · [Setup and recovery](SETUP.md) · [Architecture](ARCHITECTURE.md)
 
@@ -21,7 +21,11 @@ A Windows x64 client for personal VLESS/REALITY tunnels and supported servers im
 - Signed update feeds and bundles, independent elevated verification, repair, uninstall and rollback after ordinary replacement failures.
 - Owner-only device enrollment/revocation and server usage tools using a separately supplied SSH key.
 
-## Install
+## Linux / Hyprland
+
+[Linux setup and recovery](linux/README.md) · Native Qt Wayland dashboard, original animated tunnel mascot, full-device routing, owner tools and an optional nftables network lock. Download the signed Linux archive from Releases. Linux platform differences are documented in its setup guide.
+
+## Install on Windows
 
 Download Client for ordinary use or Owner for server administration. Both include the engines and .NET runtime, and start without an enrolled identity. Import your own complete connection link or supported v2rayN server, then connect.
 

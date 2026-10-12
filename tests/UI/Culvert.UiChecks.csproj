@@ -10,5 +10,6 @@
     <Content Include="../../configs/*.json" Link="configs/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
     <EmbeddedResource Include="../../assets/Culvert.ico" LogicalName="Culvert.ico" />
+    <EmbeddedResource Include="../../assets/Culvert-mark.png" LogicalName="Culvert-mark.png" />
   </ItemGroup>
 </Project>

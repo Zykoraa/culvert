@@ -6,10 +6,16 @@ $tracked = @(& git -C $root ls-files)
 if ($LASTEXITCODE -ne 0 -or !$tracked.Count) { throw 'A tracked source inventory is required.' }
 $forbidden = @()
 foreach ($relative in $tracked) {
+    # This is public verification material, never a private signing key.
+    if ($relative -eq 'linux/release-public-key.pem') {
+        $publicTrust = [IO.File]::ReadAllText((Join-Path $root $relative))
+        if ($publicTrust -notmatch '^-----BEGIN PUBLIC KEY-----\r?\n[A-Za-z0-9+/=\r\n]+-----END PUBLIC KEY-----\r?\n?$') { throw 'Invalid Linux public release trust.' }
+        continue
+    }
     if ($relative -match '(?i)(^|/)(secrets|logs|incidents|\.ssh|artifacts/private|bin|obj|dist)/|(^|/)\.env(?:\.|$)|\.(?:dpapi|key|pem|ppk|pdb|map)$|(^|/)(?:profile\.json|.*\.run\.json|history\.jsonl|update-feed\.json|Mapping\.(?:xml|txt)|obfuscar\.xml)$') {
         $forbidden += $relative
     }
-    if ([IO.Path]::GetExtension($relative) -notin @('.exe','.dll','.ico')) {
+    if ([IO.Path]::GetExtension($relative) -notin @('.exe','.dll','.ico','.png')) {
         $text = [IO.File]::ReadAllText((Join-Path $root $relative))
         if ($text -match '(?i)\b[A-Z]:[/\\]+Users[/\\]+(?!Public[/\\]|\[user\])[^/\\\s]+') { $forbidden += $relative }
     }
