@@ -3,8 +3,8 @@
 This repository publishes Culvert release downloads and signed update feeds at
 https://zykoraa.github.io/culvert/.
 
-The application source, production signing key, device profiles and private
-diagnostics are kept outside this distribution repository. The Windows app
+The published download directory contains only distribution files. Production
+signing keys, device profiles and private diagnostics stay outside it. The Windows app
 verifies feeds against its embedded release public key. GitHub account access
 alone cannot authorize a differently signed app update.
 

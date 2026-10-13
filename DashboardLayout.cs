@@ -55,7 +55,7 @@ internal sealed partial class DashboardForm
         var overview = Page("Overview"); var home = Grid(100); home.Dock = DockStyle.Top; home.RowCount = 4;
         home.RowStyles.Add(new(SizeType.Absolute, 36)); home.RowStyles.Add(new(SizeType.Absolute, 110)); home.RowStyles.Add(new(SizeType.Percent, 100)); home.RowStyles.Add(new(SizeType.Absolute, 54));
         _profile.Padding = new(4, 0, 0, 0); home.Controls.Add(_profile, 0, 0);
-        var hero = ChartPanel("TUNNEL TRAFFIC", "Measured blue RX / cyan TX", _trafficChart); home.Controls.Add(hero, 0, 2);
+        var hero = ChartPanel("TUNNEL TRAFFIC", "Measured crimson RX / rose TX", _trafficChart); home.Controls.Add(hero, 0, 2);
         var stats = Grid(33.33f, 33.33f, 33.34f);
         DashboardMetric[] metrics = [_exit, _latency, _speed]; foreach (var metric in metrics) stats.Controls.Add(metric);
         home.Controls.Add(stats, 0, 1);

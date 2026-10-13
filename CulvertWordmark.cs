@@ -14,7 +14,7 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
         Dock = DockStyle.Fill; Margin = Padding.Empty; BackColor = Color.Transparent;
         Font = new Font("Consolas", 23, FontStyle.Bold);
         Text = "Culvert"; AccessibleName = "Culvert";
-        AccessibleDescription = "Connected on your terms. Decorative logo.";
+        AccessibleDescription = "Taking your data underground. Decorative tunnel mascot.";
         AccessibleRole = AccessibleRole.StaticText; TabStop = false;
         _orbit.Tick += (_, _) => { if (AnimationSettings.Allowed(this)) { _angle = (_angle + 1.5f) % 360; Invalidate(); } };
     }
