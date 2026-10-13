@@ -10,6 +10,7 @@ configs/profile.json
 *.dpapi
 *.key
 *.pem
+!linux/release-public-key.pem
 *.ppk
 .env
 .env.*

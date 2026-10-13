@@ -1,6 +1,8 @@
 """Linux control-boundary, connection evidence and credential isolation checks."""
 import json
+import base64
 import os
+import re
 from pathlib import Path
 import struct
 import sys
@@ -18,6 +20,15 @@ PROFILE = {'user':'Test device', 'server':'203.0.113.7', 'port':443,
 
 
 class LinuxTests(unittest.TestCase):
+    def test_linux_release_public_trust_matches_windows(self):
+        root = Path(__file__).resolve().parents[1]
+        pem = (root/'linux/release-public-key.pem').read_text()
+        self.assertIn('BEGIN PUBLIC KEY', pem)
+        self.assertNotIn('PRIVATE KEY', pem)
+        der = base64.b64decode(''.join(pem.splitlines()[1:-1]))
+        windows = re.search(r'FromBase64String\("([^"]+)"', (root/'ReleaseTrust.cs').read_text()).group(1)
+        self.assertEqual(der, base64.b64decode(windows))
+
     def test_link_round_trip_and_duplicate_query_rejection(self):
         link = common.create_link(PROFILE)
         self.assertEqual(common.parse_link(link), PROFILE)
