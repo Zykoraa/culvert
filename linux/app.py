@@ -132,7 +132,7 @@ class Window(QMainWindow):
         shell = QWidget(); outer = QHBoxLayout(shell); outer.setContentsMargins(0, 0, 0, 0); outer.setSpacing(0); self.setCentralWidget(shell)
         sidebar = self.sidebar = QFrame(); sidebar.setObjectName('sidebar'); sidebar.setFixedWidth(225); nav = QVBoxLayout(sidebar); nav.setContentsMargins(24, 30, 18, 20)
         self.logo = Logo(); nav.addWidget(self.logo)
-        self.brand_label = label('CULVERT', 'brand'); nav.addWidget(self.brand_label); self.brand_subtitle = label('TAKING YOUR DATA\nUNDERGROUND.', 'eyebrow'); nav.addWidget(self.brand_subtitle); nav.addSpacing(10)
+        self.brand_label = label('CULVERT', 'brand'); nav.addWidget(self.brand_label); self.brand_subtitle = label('YOUR DATA.\nOURS NOW.', 'eyebrow'); nav.addWidget(self.brand_subtitle); nav.addSpacing(10)
         self.stack = QStackedWidget(); self.nav_buttons = []
         for title in ('Overview', 'Connections', 'Diagnostics', 'Your devices', 'Settings'):
             item = button(title, lambda checked=False, name=title: self.navigate(name)); item.setToolTip(title); item.setProperty('nav', True); nav.addWidget(item); self.nav_buttons.append(item)
