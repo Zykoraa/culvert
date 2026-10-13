@@ -17,6 +17,9 @@ function SetupAction([string]$action) {
 try {
     SetupAction '--install'
     if (-not (Test-Path -LiteralPath $installed)) { throw 'App not installed' }
+    $installedGuide = Join-Path (Split-Path $installed -Parent) 'VM_SETUP.md'
+    if (-not (Test-Path -LiteralPath $installedGuide) -or
+        (Get-FileHash -LiteralPath $installedGuide).Hash -ne (Get-FileHash -LiteralPath (Join-Path $root 'VM_SETUP.md')).Hash) { throw 'Installer did not include the current VM setup guide.' }
     $programs = [Environment]::GetFolderPath('CommonPrograms')
     $menu = Join-Path $programs 'Culvert.lnk'
     $legacyMenu = Join-Path $programs 'Culvert Client.lnk'

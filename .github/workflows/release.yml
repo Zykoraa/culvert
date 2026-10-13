@@ -68,7 +68,8 @@ jobs:
           ./scripts/test-setup.ps1
           ./scripts/package-owner.ps1
           ./scripts/prepare-public-release.ps1
-      - name: Sign the Linux archive with Culvert release trust
+          ./scripts/check-release-guides.ps1
+      - name: Sign server and Linux archives with Culvert release trust
         shell: pwsh
         run: |
           $version = ([xml](Get-Content Culvert.csproj -Raw)).Project.PropertyGroup.Version | Where-Object { $_ }
@@ -76,6 +77,9 @@ jobs:
           $archive = "Culvert-linux-x86_64-$version.tar.gz"
           Copy-Item "artifacts/private/linux-release/$archive" "$folder/$archive"
           dotnet run --project tools/ReleaseTool/ReleaseTool.csproj -c Release -- sign-file "$folder/$archive" "$folder/$archive.sig"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $serverArchive = "Culvert-Server-$version.zip"
+          dotnet run --project tools/ReleaseTool/ReleaseTool.csproj -c Release -- sign-file "$folder/$serverArchive" "$folder/$serverArchive.sig"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $lines = foreach ($file in Get-ChildItem $folder -File | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object Name) { "$((Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($file.Name)" }
           $lines | Set-Content "$folder/SHA256SUMS.txt" -Encoding utf8NoBOM

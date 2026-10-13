@@ -1,4 +1,6 @@
-# Culvert 2.4.3 — setup and daily use
+# Culvert 2.4.4 — setup and daily use
+
+For step-by-step Oracle, SSH and Xray administration, use [the detailed VM guide](VM_SETUP.md).
 
 For a new VM or an existing server created by an older bootstrap, follow
 [the server network setup](server/NETWORK.md). Culvert retains Conduit's IPv4
@@ -21,7 +23,7 @@ Hover a chart to inspect a sample, or focus it and use Left/Right. Missing measu
 
 ## Install on a Windows x64 PC
 
-1. Get `Culvert-Owner-Setup.exe` (your administration PC) or `Culvert-Client-Setup.exe` (another device) from the private GitHub release.
+1. Get `Culvert-Owner-Setup.exe` (your administration PC) or `Culvert-Client-Setup.exe` (another device) from the GitHub release.
 2. In the old app, choose Disconnect and exit. Stop v2rayN or any other tunnel too.
 3. Open Setup, choose Install, and accept Windows' administrator prompt. These builds have signed update bundles but no Windows publisher certificate, so an unknown-publisher warning is possible.
 4. Open Culvert from the Start menu normally. Import your personal device link, or use **Import from v2rayN**. Both installers start without an enrolled identity.
