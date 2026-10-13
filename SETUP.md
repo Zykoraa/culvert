@@ -1,5 +1,10 @@
 # Culvert 2.4.3 — setup and daily use
 
+For a new VM or an existing server created by an older bootstrap, follow
+[the server network setup](server/NETWORK.md). Culvert retains Conduit's IPv4
+preference and server hostname routing. Native IPv6-only destinations also
+require IPv6 egress on the VM.
+
 ## Dashboard interactions
 
 The main window has a dark integrated title bar. Drag its empty area to move the window, double-click to maximize/restore, or right-click for the Windows system menu. The edges resize normally, and the maximize button exposes the Windows Snap target. Close hides the dashboard to the tray; it does not disconnect the tunnel.

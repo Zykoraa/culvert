@@ -52,8 +52,6 @@ Check(missingKeys["outbounds"]![0]!["streamSettings"]!["realitySettings"]!["publ
 Check(generatedXray["outbounds"]![0]!["settings"]!["vnext"]![0]!["address"]!.GetValue<string>() == profile.Server,
     "Imported endpoint is used by Xray");
 var generatedTun = System.Text.Json.Nodes.JsonNode.Parse(TunnelController.BuildTunConfig(profile, File.ReadAllText(Path.Combine(configDir, "singbox-tun.json"))))!;
-Check(generatedTun["dns"]?["strategy"]?.GetValue<string>() == "ipv4_only", "Tunnel DNS avoids unreachable IPv6 exits");
-Check(generatedTun["dns"]?["rules"]?[0]?["query_type"]?.GetValue<string>() == "AAAA" && generatedTun["dns"]?["rules"]?[0]?["action"]?.GetValue<string>() == "predefined", "Tunnel DNS returns no IPv6 address to apps");
 var rules = generatedTun["route"]!["rules"]!.AsArray();
 Check(rules.Any(r => r?["action"]?.GetValue<string>() == "reject" && r["ip_cidr"]?[0]?.GetValue<string>() == "172.20.0.0/30"),
     "Import preserves the TUN loop guard");

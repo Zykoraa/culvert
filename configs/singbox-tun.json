@@ -4,11 +4,8 @@
     "servers": [
       { "tag": "remote", "type": "https", "server": "1.1.1.1", "path": "/dns-query", "detour": "proxy" }
     ],
-    "rules": [
-      { "query_type": "AAAA", "action": "predefined", "rcode": "NOERROR" }
-    ],
     "final": "remote",
-    "strategy": "ipv4_only"
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
