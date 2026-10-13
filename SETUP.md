@@ -1,4 +1,6 @@
-# Culvert 2.4.3 — setup and daily use
+# Culvert 2.4.4 — setup and daily use
+
+For step-by-step Oracle, SSH and Xray administration, use [the detailed VM guide](VM_SETUP.md).
 
 For a new VM or an existing server created by an older bootstrap, follow
 [the server network setup](server/NETWORK.md). Culvert retains Conduit's IPv4

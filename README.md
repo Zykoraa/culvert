@@ -27,6 +27,10 @@ A Windows x64 and native Linux / Wayland client for personal VLESS/REALITY tunne
 
 ## Install on Windows
 
+[Detailed Oracle VM and Xray setup guide](VM_SETUP.md) — includes the Culvert VM
+deployment snapshot, cloud and guest firewall rules, SSH, server installation,
+device profiles, every deployed Xray setting, Discord verification and recovery.
+
 Download Client for ordinary use or Owner for server administration. Both include the engines and .NET runtime, and start without an enrolled identity. Import your own complete connection link or supported v2rayN server, then connect.
 
 Network lock is off by default and affects the whole PC. Read [its exceptions and recovery controls](SETUP.md) before enabling it. Connection checks sample specific paths; a verified indication is not a guarantee covering every app or route.

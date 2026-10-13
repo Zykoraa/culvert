@@ -36,7 +36,21 @@ try {
             (Get-FileHash -LiteralPath (Join-Path $assets $setupName) -Algorithm SHA256).Hash -ne $hashes[$flavor]) { throw 'Release bytes changed during staging' }
     }
 } finally { $signer.Dispose() }
-$allowed = @("Culvert-Owner-$Version-Setup.exe","Culvert-Client-$Version-Setup.exe","Culvert-Owner-$Version.wtupdate","Culvert-Client-$Version.wtupdate",'Culvert-Owner-stable.json','Culvert-Client-stable.json','SHA256SUMS.txt')
+$guideName = "Culvert-VM-Setup-$Version.md"
+$serverName = "Culvert-Server-$Version.zip"
+Copy-Item -LiteralPath (Join-Path $repository 'VM_SETUP.md') -Destination (Join-Path $assets $guideName) -Force
+$serverSources = @(& git -C $repository ls-files -- server/)
+if ($LASTEXITCODE -ne 0 -or !$serverSources.Count) { throw 'A tracked server source inventory is required.' }
+$serverFiles = @('VM_SETUP.md','RELEASE_NOTES.md') + $serverSources
+$stream = [IO.File]::Open((Join-Path $assets $serverName), [IO.FileMode]::Create, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+$archive = [IO.Compression.ZipArchive]::new($stream, [IO.Compression.ZipArchiveMode]::Create)
+try {
+    foreach ($relative in $serverFiles) {
+        if ([IO.Path]::GetExtension($relative) -notin @('.md','.sh','.py','.json') -or $relative -match '(^|/)(profile\.json|secrets|logs)(/|$)') { throw 'Unexpected server publication source.' }
+        [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, (Join-Path $repository $relative), $relative, [IO.Compression.CompressionLevel]::Optimal)
+    }
+} finally { $archive.Dispose(); $stream.Dispose() }
+$allowed = @("Culvert-Owner-$Version-Setup.exe","Culvert-Client-$Version-Setup.exe","Culvert-Owner-$Version.wtupdate","Culvert-Client-$Version.wtupdate",'Culvert-Owner-stable.json','Culvert-Client-stable.json','SHA256SUMS.txt',$guideName,$serverName,"$serverName.sig")
 foreach ($file in Get-ChildItem -LiteralPath $assets -File) { if ($file.Name -notin $allowed) { throw "Unexpected publication file: $($file.Name)" } }
 $lines = foreach ($file in Get-ChildItem -LiteralPath $assets -File | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object Name) { "$( (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() )  $($file.Name)" }
 $lines | Set-Content -LiteralPath (Join-Path $assets 'SHA256SUMS.txt') -Encoding utf8NoBOM

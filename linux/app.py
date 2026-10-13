@@ -146,7 +146,7 @@ class Window(QMainWindow):
         for title in ('Overview', 'Connections', 'Diagnostics', 'Your devices', 'Settings'):
             item = button(title, lambda checked=False, name=title: self.navigate(name)); item.setToolTip(title); item.setProperty('nav', True); nav.addWidget(item); self.nav_buttons.append(item)
         nav.addStretch(); self.session_label = label('WAYLAND / ' + (os.environ.get('XDG_CURRENT_DESKTOP') or 'DESKTOP').upper(), 'eyebrow', True); nav.addWidget(self.session_label)
-        self.footer_label = label('CULVERT 2.4.3\nConnected on your terms.', 'muted', True); nav.addWidget(self.footer_label); outer.addWidget(sidebar)
+        self.footer_label = label('CULVERT 2.4.4\nConnected on your terms.', 'muted', True); nav.addWidget(self.footer_label); outer.addWidget(sidebar)
         body = QWidget(); layout = QVBoxLayout(body); layout.setContentsMargins(26, 24, 26, 24); layout.setSpacing(18)
         self.notice = label('', 'muted', True); self.notice.setVisible(False); layout.addWidget(self.notice); layout.addWidget(self.stack); outer.addWidget(body, 1)
         self.overview(); self.connections(); self.diagnostics(); self.devices(); self.settings(); self.navigate('Overview')
@@ -274,7 +274,7 @@ class Window(QMainWindow):
         path, _ = QFileDialog.getSaveFileName(self, 'Save redacted diagnostics', 'Culvert-diagnostics.json', 'JSON (*.json)')
         if path:
             safe = {k: v for k, v in self.status.items() if k not in ('connections',)}
-            safe.update(version='2.4.3', platform=QGuiApplication.platformName(), desktop=os.environ.get('XDG_CURRENT_DESKTOP', ''))
+            safe.update(version='2.4.4', platform=QGuiApplication.platformName(), desktop=os.environ.get('XDG_CURRENT_DESKTOP', ''))
             private_write(Path(path), safe); self.say('Saved locally. No credentials or destination history included.')
     def measure(self):
         if not self.status.get('verified'): self.say('Wait for a verified tunnel first.'); return
