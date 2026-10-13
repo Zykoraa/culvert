@@ -22,7 +22,7 @@ try {
         $sourceHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([byte[]]$sourceBytes))
         $entryHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([byte[]]$entryBytes))
         if ($sourceHash -ne $entryHash) { throw "Server archive differs from source: $relative" }
-        if ($relative.EndsWith('.sh') -and [Array]::IndexOf($entryBytes, [byte]13) -ge 0) { throw "Shell script contains Windows line endings: $relative" }
+        if ([IO.Path]::GetExtension($relative) -in @('.sh','.py') -and [Array]::IndexOf($entryBytes, [byte]13) -ge 0) { throw "Linux executable source contains Windows line endings: $relative" }
     }
 } finally { $archive.Dispose() }
 Write-Output 'Standalone VM guide and complete server archive verified against source.'

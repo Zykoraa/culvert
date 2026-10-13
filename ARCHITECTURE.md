@@ -1,4 +1,4 @@
-# Culvert 2.4.4 architecture and release process
+# Culvert 2.4.5 architecture and release process
 
 ## Connection notifications
 

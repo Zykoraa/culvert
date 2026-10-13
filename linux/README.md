@@ -11,8 +11,8 @@ Download the Linux archive and its `.sig` from
 previously trusted copy of `linux/verify-update.py` and its release public key:
 
 ```sh
-python3 linux/verify-update.py Culvert-linux-x86_64-2.4.4.tar.gz Culvert-linux-x86_64-2.4.4.tar.gz.sig
-tar -xzf Culvert-linux-x86_64-2.4.4.tar.gz
+python3 linux/verify-update.py Culvert-linux-x86_64-2.4.5.tar.gz Culvert-linux-x86_64-2.4.5.tar.gz.sig
+tar -xzf Culvert-linux-x86_64-2.4.5.tar.gz
 cd Culvert-linux
 bash linux/install.sh
 ```
