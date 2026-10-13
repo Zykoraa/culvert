@@ -45,8 +45,10 @@ quits its interface; the system tunnel keeps running. Reopen Culvert to control
 it. Small tiled windows can scroll their content. Floating the window gives
 the dashboard more room. No Hyprland configuration is changed by installation.
 
-The original mascot's orbit animates only while the dashboard is visible and
-active. Turn it off in Settings. Its motion never indicates tunnel health.
+The original Star of David uses the trans flag colors and tactical frame details.
+It counter-rotates inside a crimson orbit, with two brief horizontal glitch slices
+per orbit. Animation runs only while the dashboard is visible and active. Turn
+rotation, orbit and glitch off together in Settings. Motion never indicates tunnel health.
 
 ## Connection evidence and recovery
 

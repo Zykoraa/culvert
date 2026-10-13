@@ -100,15 +100,16 @@ class Chart(QWidget):
 
 
 class Logo(QWidget):
-    """Original vector-derived mascot with a decorative 12-second orbit."""
+    """Trans-colored tactical star, counter-rotating inside a decorative orbit."""
     def __init__(self):
-        super().__init__(); self.setFixedHeight(146); self.phase = -44.; self.animated = bool(preferences()['animations'])
-        self.mascot = QPixmap(str(ROOT / 'assets/Culvert-mark.png'))
-        self.setAccessibleName('Culvert tunnel mascot with decorative orbit')
+        super().__init__(); self.setFixedHeight(146); self.phase = 0.; self.animated = bool(preferences()['animations'])
+        self.emblem = QPixmap(str(ROOT / 'assets/Culvert-mark.png'))
+        self.setAccessibleName('Culvert trans-colored Star of David with decorative rotation and glitch')
         self.timer = QTimer(self); self.timer.timeout.connect(self.advance); self.timer.start(50)
     def advance(self):
         if self.animated and self.isVisible() and self.window().isActiveWindow() and not self.window().isMinimized():
-            self.phase = (self.phase + 1.5) % 360; self.update()
+            self.phase = (self.phase + 1.5) % 720; self.update()
+    def set_animated(self, enabled): self.animated = enabled; self.update()
     def paintEvent(self, _):
         import math
         painter = QPainter(self); painter.setRenderHint(QPainter.RenderHint.Antialiasing); painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
@@ -121,7 +122,15 @@ class Logo(QWidget):
             x = ring.center().x() + math.cos(math.radians(angle))*ring.width()/2
             y = ring.center().y() + math.sin(math.radians(angle))*ring.height()/2
             painter.setPen(Qt.PenStyle.NoPen); painter.setBrush(QColor(color)); painter.drawEllipse(QRectF(x-size*.032, y-size*.032, size*.064, size*.064))
-        painter.drawPixmap(QRectF(left+size*.10, top+size*.10, size*.80, size*.80), self.mascot, QRectF(self.mascot.rect()))
+        def star(offset=0):
+            painter.save(); painter.translate(left+size/2+offset, top+size/2); painter.rotate(-self.phase*.5)
+            painter.drawPixmap(QRectF(-size*.40, -size*.40, size*.80, size*.80), self.emblem, QRectF(self.emblem.rect())); painter.restore()
+        star()
+        phase = self.phase % 360
+        if self.animated and self.window().isActiveWindow() and (56 <= phase < 59 or 61 <= phase < 64):
+            painter.save(); painter.setClipRect(QRectF(left, top+size*.43, size, size*.12)); star(size*(.025 if phase < 60 else -.025)); painter.restore()
+            painter.setPen(QPen(QColor('#5bcefa'), max(1, size*.012))); painter.drawLine(int(left+size*.14), int(top+size*.45), int(left+size*.31), int(top+size*.45))
+            painter.setPen(QPen(QColor('#f5a9b8'), max(1, size*.012))); painter.drawLine(int(left+size*.69), int(top+size*.54), int(left+size*.86), int(top+size*.54))
 
 
 class Window(QMainWindow):
@@ -215,8 +224,8 @@ class Window(QMainWindow):
         self.network_lock = QCheckBox('Block ordinary internet if the tunnel fails (whole PC)'); self.network_lock.setChecked(bool(options['network_lock']))
         self.autoheal = QCheckBox('Recover automatically after network changes'); self.autoheal.setChecked(bool(options['autoheal']))
         self.autostart = QCheckBox('Open Culvert when I sign in'); self.autostart.setChecked(bool(options['autostart']))
-        self.animations = QCheckBox('Animate the mascot orbit while Culvert is active'); self.animations.setChecked(bool(options['animations']))
-        self.animations.toggled.connect(lambda enabled: setattr(self.logo, 'animated', enabled))
+        self.animations = QCheckBox('Animate the star, orbit and subtle glitch while Culvert is active'); self.animations.setChecked(bool(options['animations']))
+        self.animations.toggled.connect(self.logo.set_animated)
         form.addRow('SSH username', self.ssh_user); form.addRow('SSH port', self.ssh_port); form.addRow('Private key file', key_row); form.addRow(self.network_lock); form.addRow(self.autoheal); form.addRow(self.autostart); form.addRow(self.animations); layout.addLayout(form)
         layout.addWidget(label('The key stays on this PC. The optional network lock affects every application. Restore normal internet clears Culvert’s lock.', 'muted', True))
         actions = QHBoxLayout(); actions.addWidget(button('Save settings', self.save_settings)); actions.addWidget(button('Import previous profile', self.import_profile)); actions.addWidget(button('VM usage', self.usage)); layout.addLayout(actions)
@@ -394,6 +403,7 @@ def main():
         target = sys.argv[sys.argv.index('--snapshot') + 1]
         def snapshot():
             for i in range(75): window.chart.add((35 + ((i*17) % 90))*1024)
+            window.logo.phase = 0
             window.grab().save(target); print('Qt platform:', QGuiApplication.platformName()); app.quit()
         QTimer.singleShot(1200, snapshot)
     return app.exec()

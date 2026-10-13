@@ -23,7 +23,7 @@ A Windows x64 and native Linux / Wayland client for personal VLESS/REALITY tunne
 
 ## Linux / Hyprland
 
-[Linux setup and recovery](linux/README.md) · Native Qt Wayland dashboard, original animated tunnel mascot, full-device routing, owner tools and an optional nftables network lock. Download the signed Linux archive from Releases. Linux platform differences are documented in its setup guide.
+[Linux setup and recovery](linux/README.md) · Native Qt Wayland dashboard, rotating trans-colored tactical star with subtle glitch effects, full-device routing, owner tools and an optional nftables network lock. Download the signed Linux archive from Releases. Linux platform differences are documented in its setup guide.
 
 ## Install on Windows
 

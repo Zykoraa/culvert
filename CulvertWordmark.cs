@@ -6,7 +6,7 @@ namespace Culvert;
 internal sealed class CulvertWordmark : Control, IAnimatedControl
 {
     private readonly System.Windows.Forms.Timer _orbit = new() { Interval = 50 };
-    private float _angle = -44;
+    private float _angle;
     public CulvertWordmark()
     {
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
@@ -14,9 +14,9 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
         Dock = DockStyle.Fill; Margin = Padding.Empty; BackColor = Color.Transparent;
         Font = new Font("Consolas", 23, FontStyle.Bold);
         Text = "Culvert"; AccessibleName = "Culvert";
-        AccessibleDescription = "Your data. Ours now. Decorative tunnel mascot.";
+        AccessibleDescription = "Your data. Ours now. Decorative trans-colored Star of David.";
         AccessibleRole = AccessibleRole.StaticText; TabStop = false;
-        _orbit.Tick += (_, _) => { if (AnimationSettings.Allowed(this)) { _angle = (_angle + 1.5f) % 360; Invalidate(); } };
+        _orbit.Tick += (_, _) => { if (AnimationSettings.Allowed(this)) { _angle = (_angle + 1.5f) % 720; Invalidate(); } };
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -44,7 +44,7 @@ internal sealed class CulvertWordmark : Control, IAnimatedControl
         float top = (Height - size) / 2, left = 2;
         Color blue = SystemInformation.HighContrast ? SystemColors.WindowText : DashboardTheme.Blue;
         Color pink = SystemInformation.HighContrast ? SystemColors.WindowText : DashboardTheme.Pink;
-        BrandMark.Draw(g, new RectangleF(left, top, size, size), _angle);
+        BrandMark.Draw(g, new RectangleF(left, top, size, size), _angle, AnimationSettings.Allowed(this));
 
         using var letters = new GraphicsPath();
         letters.AddString("CULVERT", Font.FontFamily, (int)Font.Style, Font.SizeInPoints * g.DpiY / 72,

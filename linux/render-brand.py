@@ -15,4 +15,4 @@ for name, size in [('Culvert-mark', 512), ('Culvert', 1024)]:
     if not bitmap.save(str(assets / (name + '.png'))): raise SystemExit('Cannot save logo')
 with Image.open(assets / 'Culvert.png') as source:
     source.save(assets / 'Culvert.ico', sizes=[(n,n) for n in (16,20,24,32,40,48,64,128,256)])
-print('Rendered original Culvert mascot, 1024px icon and Windows icon frames.')
+print('Rendered original Culvert star, 1024px icon and Windows icon frames.')
