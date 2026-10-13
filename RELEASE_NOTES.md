@@ -1,4 +1,6 @@
-# Culvert 2.4.4
+# Culvert 2.4.5
+
+This patch also corrects the 2.4.4 server ZIP's Python line endings. Linux shell and Python sources are pinned to LF in Git and checked inside the actual archive, so the installed device helper launches correctly on Oracle Linux.
 
 This release brings Culvert's server hostname routing into line with Conduit and includes a complete Oracle VM/Xray setup guide. The client retains `prefer_ipv4`, the existing dual-stack TUN, and the same pinned engines.
 
@@ -10,9 +12,9 @@ The current Culvert VM has already received this fix. Discord messages and voice
 
 ## Setup documentation and downloads
 
-- [Read the detailed Oracle VM and Xray guide](https://github.com/Zykoraa/culvert/blob/v2.4.4/VM_SETUP.md).
-- [Download the standalone guide](https://github.com/Zykoraa/culvert/releases/download/v2.4.4/Culvert-VM-Setup-2.4.4.md).
-- [Download the server tools](https://github.com/Zykoraa/culvert/releases/download/v2.4.4/Culvert-Server-2.4.4.zip), with a detached Culvert release signature.
+- [Read the detailed Oracle VM and Xray guide](https://github.com/Zykoraa/culvert/blob/v2.4.5/VM_SETUP.md).
+- [Download the standalone guide](https://github.com/Zykoraa/culvert/releases/download/v2.4.5/Culvert-VM-Setup-2.4.5.md).
+- [Download the server tools](https://github.com/Zykoraa/culvert/releases/download/v2.4.5/Culvert-Server-2.4.5.zip), with a detached Culvert release signature.
 
 The guide covers the specific Culvert VM snapshot, Oracle routes/security rules, guest firewalld, SSH/key permissions, fresh versus existing VM setup, all deployed Xray/REALITY/Vision/XUDP settings, per-device links, owner tools, logs, verification and recovery. Live credentials are omitted. Windows installers/update bundles and the Linux archive also contain the guide.
 

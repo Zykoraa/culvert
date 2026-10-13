@@ -4,7 +4,7 @@ import hashlib,json,subprocess,sys,tarfile
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
 subprocess.run([sys.executable,str(root/'linux/fetch-engines.py')],check=True)
-version='2.4.4';folder=root/'dist';folder.mkdir(exist_ok=True)
+version='2.4.5';folder=root/'dist';folder.mkdir(exist_ok=True)
 output=folder/f'Culvert-linux-x86_64-{version}.tar.gz'
 files=[p for p in (root/'linux').iterdir() if p.suffix in ('.py','.sh','.json','.pem','.service','.md','.txt')]
 files += [root/'configs/singbox-tun.json',*[root/'assets'/name for name in ('Culvert.ico','Culvert.png','Culvert-mark.png','Culvert.svg','Culvert-mark.svg')],root/'cores/linux/xray',root/'cores/linux/sing-box']

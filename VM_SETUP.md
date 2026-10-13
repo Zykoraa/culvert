@@ -1,4 +1,4 @@
-# Culvert 2.4.4 — Oracle VM and Xray setup guide
+# Culvert 2.4.5 — Oracle VM and Xray setup guide
 
 This guide covers the Culvert Oracle Linux VM, the Windows Owner app, and the
 VLESS/REALITY tunnel between them. Start with the existing-VM section if Xray is
@@ -123,28 +123,28 @@ sudo dnf install -y curl unzip jq python3 openssl
 Then download the release:
 
 ```bash
-mkdir -p ~/culvert-release-2.4.4
-cd ~/culvert-release-2.4.4
-curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.4/Culvert-Server-2.4.4.zip -o Culvert-Server-2.4.4.zip
-curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.4/Culvert-Server-2.4.4.zip.sig -o Culvert-Server-2.4.4.zip.sig
-curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.4/SHA256SUMS.txt -o SHA256SUMS.txt
+mkdir -p ~/culvert-release-2.4.5
+cd ~/culvert-release-2.4.5
+curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.5/Culvert-Server-2.4.5.zip -o Culvert-Server-2.4.5.zip
+curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.5/Culvert-Server-2.4.5.zip.sig -o Culvert-Server-2.4.5.zip.sig
+curl -fL https://github.com/Zykoraa/culvert/releases/download/v2.4.5/SHA256SUMS.txt -o SHA256SUMS.txt
 sha256sum --check --ignore-missing SHA256SUMS.txt
 ```
 
 Extract the verified server package:
 
 ```bash
-unzip -q Culvert-Server-2.4.4.zip -d tools
+unzip -q Culvert-Server-2.4.5.zip -d tools
 cd tools
 ```
 
 The checksum check must report the server ZIP as OK. The release also publishes
-`Culvert-Server-2.4.4.zip.sig`, signed by Culvert's release key. If you already
+`Culvert-Server-2.4.5.zip.sig`, signed by Culvert's release key. If you already
 have a trusted Culvert checkout, its `linux/verify-update.py` and colocated
 `linux/release-public-key.pem` can verify that file:
 
 ```bash
-python3 /path/to/trusted/culvert/linux/verify-update.py Culvert-Server-2.4.4.zip Culvert-Server-2.4.4.zip.sig
+python3 /path/to/trusted/culvert/linux/verify-update.py Culvert-Server-2.4.5.zip Culvert-Server-2.4.5.zip.sig
 ```
 
 Run that command from the directory containing the downloaded ZIP/signature.
@@ -478,7 +478,7 @@ disconnect the tunnel.
 
 ## 12. Release files and references
 
-The 2.4.4 release includes Owner/Client Windows installers and signed update
+The 2.4.5 release includes Owner/Client Windows installers and signed update
 bundles, signed Linux and server archives, signed update feeds, this standalone
 guide, and `SHA256SUMS.txt`. Windows bundles and the Linux archive also include
 this guide. Installers contain no enrolled identity or SSH/REALITY private key.
@@ -488,7 +488,7 @@ pinned Xray build appropriate to the VM architecture.
 Configuration sources: `server/bootstrap.sh`, `configs/xray.template.json`,
 `configs/singbox-tun.json`, and `engines.lock.json` in the tagged repository.
 
-- [Culvert release 2.4.4](https://github.com/Zykoraa/culvert/releases/tag/v2.4.4)
+- [Culvert release 2.4.5](https://github.com/Zykoraa/culvert/releases/tag/v2.4.5)
 - [Oracle security rules](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securityrules.htm)
 - [Oracle security lists](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm)
 - [Xray inbound hostname detection and destination override](https://xtls.github.io/en/config/inbound.html)
