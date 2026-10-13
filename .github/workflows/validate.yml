@@ -18,7 +18,7 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -p 'test_*.py'
           python3 -m compileall -q linux
-          bash -n linux/install.sh linux/install-system.sh server/bootstrap.sh
+          bash -n linux/install.sh linux/install-system.sh server/bootstrap.sh server/enable-hostname-routing.sh
       - name: Verify and package Linux engines
         run: python3 linux/package.py
   windows:

@@ -25,7 +25,7 @@ id xray >/dev/null 2>&1 || useradd --system --gid xray --home-dir /var/lib/culve
 install -m 755 "$STAGE/core/xray" /usr/local/bin/xray
 install -d -m 750 -o root -g xray /usr/local/etc/xray
 install -m 644 "$ROOT/cover-profiles.json" /usr/local/etc/xray/cover-profiles.json
-for script in add-user.sh del-user.sh set-cover.sh get-cover.sh confirm-cover.sh vet-cover.sh; do
+for script in add-user.sh del-user.sh set-cover.sh get-cover.sh confirm-cover.sh vet-cover.sh enable-hostname-routing.sh; do
   install -m 755 "$ROOT/$script" "/usr/local/bin/$script"
 done
 install -m 755 "$ROOT/culvert-devices.py" /usr/local/bin/culvert-devices
@@ -42,6 +42,7 @@ private = value(r'^Private(?:Key| key):\s*(\S+)')
 public = value(r'^(?:Password(?: \(PublicKey\))?|PublicKey|Public key):\s*(\S+)')
 identity, short = str(uuid.uuid4()), secrets.token_hex(8)
 config = {'log': {'loglevel': 'warning'}, 'inbounds': [{'listen': '0.0.0.0', 'port': 443, 'protocol': 'vless',
+    'sniffing': {'enabled': True, 'destOverride': ['http', 'tls', 'quic']},
     'settings': {'clients': [{'id': identity, 'flow': 'xtls-rprx-vision', 'email': 'culvert-owner'}], 'decryption': 'none'},
     'streamSettings': {'network': 'tcp', 'security': 'reality', 'realitySettings': {'show': False, 'dest': 'www.apple.com:443',
         'xver': 0, 'serverNames': ['www.apple.com'], 'privateKey': private, 'shortIds': [short]}}}],
