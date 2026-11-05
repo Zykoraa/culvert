@@ -25,6 +25,10 @@ A Windows x64 and native Linux / Wayland client for personal VLESS/REALITY tunne
 
 [Linux setup and recovery](linux/README.md) · Native Qt Wayland dashboard, rotating trans-colored tactical star with subtle glitch effects, full-device routing, owner tools and an optional nftables network lock. Download the signed Linux archive from Releases. Linux platform differences are documented in its setup guide.
 
+## Android
+
+[Android setup](android/README.md) · Connect to Culvert with v2rayNG and verify routing from a Wi-Fi hotspot client when using USB Ethernet.
+
 ## Install on Windows
 
 [Detailed Oracle VM and Xray setup guide](VM_SETUP.md) — includes the Culvert VM
